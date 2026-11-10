@@ -1,7 +1,7 @@
 // KONFIGURASI TOKO & BANNER
 const STORE_SETTINGS = {
   "storeName": "Sahla Store",
-  "waNumber": "6281234567891",
+  "waNumber": "6281234567892",
   "heroEyebrow": "Ready stock • Update tiap hari",
   "heroTitle": "Cantik, nyaman, harga bersahabat.",
   "heroLead": "Gamis, daster, baju anak sampai HP & laptop — semua yang lagi ready ada di sini. Tinggal pilih, klik, chat.",
