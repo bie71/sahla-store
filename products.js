@@ -29,7 +29,14 @@ const STORE_SETTINGS = {
   "carouselEyebrow": "Unggulan",
   "carouselTitle": "Paling banyak ditanya",
   "carouselProductIds": [],
-  "marqueeItems": ["Gamis", "Baju Dewasa", "Baju Anak", "Daster", "Celamis", "Tyso", "HP", "Laptop"]
+  "marqueeItems": [
+    "Gamis",
+    "Baju Dewasa",
+    "Baju Anak",
+    "Daster",
+    "Celamis",
+    "Tyso"
+  ]
 };
 
 const WA_NUMBER = STORE_SETTINGS.waNumber;
