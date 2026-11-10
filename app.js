@@ -30,6 +30,30 @@
   const hLead = document.querySelector(".hero-copy .lead");
   if (hLead && settings.heroLead) hLead.innerHTML = settings.heroLead;
 
+  const hTag = document.querySelector(".hero-stage .tag-float");
+  if (hTag) {
+    if (settings.heroTag !== undefined) {
+      if (settings.heroTag.trim() === "") {
+        hTag.style.display = "none";
+      } else {
+        hTag.style.display = "";
+        hTag.textContent = settings.heroTag;
+      }
+    }
+  }
+
+  if (settings.heroCards && Array.isArray(settings.heroCards)) {
+    const cardEls = document.querySelectorAll("#stack .card3d");
+    settings.heroCards.slice(0, 3).forEach((card, idx) => {
+      if (cardEls[idx]) {
+        const img = cardEls[idx].querySelector("img");
+        const cap = cardEls[idx].querySelector("figcaption");
+        if (img && card.img) img.src = card.img;
+        if (cap && card.caption) cap.textContent = card.caption;
+      }
+    });
+  }
+
   const bEye = document.querySelector(".banner .eyebrow");
   if (bEye && settings.bannerEyebrow) bEye.textContent = settings.bannerEyebrow;
   const bTitle = document.querySelector(".banner h2");

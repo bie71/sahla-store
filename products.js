@@ -5,6 +5,21 @@ const STORE_SETTINGS = {
   "heroEyebrow": "Ready stock • Update tiap hari",
   "heroTitle": "Cantik, nyaman, harga bersahabat.",
   "heroLead": "Gamis, daster, baju anak sampai HP & laptop — semua yang lagi ready ada di sini. Tinggal pilih, klik, chat.",
+  "heroTag": "Diskon s/d 30%",
+  "heroCards": [
+    {
+      "img": "img/h1.jpg",
+      "caption": "Gamis Syari"
+    },
+    {
+      "img": "img/h2.jpg",
+      "caption": "Baju Anak"
+    },
+    {
+      "img": "img/h3.jpg",
+      "caption": "HP Second"
+    }
+  ],
   "bannerEyebrow": "Promo Jumat Berkah",
   "bannerTitle": "Beli 2 daster, gratis 1 celamis.",
   "bannerMsg": "Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)",
