@@ -448,7 +448,7 @@
   </dialog>
 
   <!-- Script data bawaan -->
-  <script src="products.js?v=9"></script>
+  <script src="products.js?v=10"></script>
 
   <!-- Admin Logic -->
   <script>
@@ -922,16 +922,6 @@
       setCarouselTitle.value = s.carouselTitle ? s.carouselTitle.replace(/<br>/g, " ") : "Paling banyak ditanya";
       renderCarouselProductList(s.carouselProductIds);
     }
-
-    bannerUploadBox.onclick = () => bannerFileInput.click();
-    bannerFileInput.onchange = e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      compressImage(file, 1200, 800, 0.8, (base64) => {
-        bannerPreview.src = base64;
-        state.settings.bannerBg = base64;
-      });
-    };
 
     btnSimpanToko.onclick = async () => {
       state.settings.storeName = setStoreName.value.trim();
