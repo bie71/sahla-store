@@ -175,8 +175,10 @@ em { font-style: italic; color: var(--terra); }
 .modal-info h3 { font-size: 1.8rem; }
 .modal-info p { color: var(--muted); }
 .modal-info .price b { font-size: 1.6rem; }
-.sizes { display: flex; flex-wrap: wrap; gap: .4rem; }
-.sizes span { border: 1.5px solid var(--sand); padding: .25rem .7rem; border-radius: 8px; font-size: .85rem; font-weight: 600; }
+.sizes { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+.size-btn { background: #fff; border: 1.5px solid var(--sand); padding: .35rem .8rem; border-radius: 8px; font-size: .85rem; font-weight: 600; cursor: pointer; color: var(--ink); font-family: inherit; transition: all .15s ease; }
+.size-btn:hover { border-color: var(--green); }
+.size-btn.active { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 2px 6px rgba(31,59,45,.25); }
 
 /* responsive */
 @media (max-width: 960px) {

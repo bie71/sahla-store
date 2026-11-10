@@ -106,6 +106,7 @@
   let filter = "Semua";
   let search = "";
   let ringAngle = 0;
+  let selectedSize = "";
 
   // Init
   if (UI.yr) UI.yr.textContent = new Date().getFullYear();
@@ -330,6 +331,7 @@
   window.openProduct = (id) => {
     const p = products.find(x => x.id === id);
     if (!p || !UI.modalBody || !UI.modal) return;
+    selectedSize = ""; // Reset size on open
     UI.modalBody.innerHTML = `
       <img src="${p.img}" alt="">
       <div class="modal-info">
@@ -343,7 +345,7 @@
         ${p.sizes && p.sizes.length ? `
           <div class="sizes">
             <strong>Size:</strong>
-            ${p.sizes.map(s => `<span>${s}</span>`).join("")}
+            ${p.sizes.map(s => `<button class="size-btn" onclick="window.selectSize(this, '${s}')">${s}</button>`).join("")}
           </div>
         ` : ""}
         <a href="#" class="btn btn-wa" style="margin-top: 1rem" onclick="window.orderWA(event, ${p.id})">
@@ -354,13 +356,25 @@
     UI.modal.showModal();
   };
 
+  window.selectSize = (btn, size) => {
+    document.querySelectorAll(".size-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedSize = size;
+  };
+
   window.orderWA = (e, id) => {
     e.preventDefault();
     const p = products.find(x => x.id === id);
     if (!p) return;
+
+    if (p.sizes && p.sizes.length && !selectedSize) {
+      alert("Pilih ukuran dulu ya kak :)");
+      return;
+    }
+
     const msg = `Halo kak, saya mau order produk ini:
 *${p.name}*
-Harga: Rp ${p.price.toLocaleString("id-ID")}
+${selectedSize ? `Ukuran: *${selectedSize}*\n` : ""}Harga: Rp ${p.price.toLocaleString("id-ID")}
 Kategori: ${p.cat}
 
 Apakah masih ready?`;
