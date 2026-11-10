@@ -96,8 +96,11 @@
     /* PIN screen overlay */
     .pin-lock { position: fixed; inset: 0; background: var(--green-dark); color: #fff; z-index: 100; display: grid; place-items: center; padding: 1.5rem; text-align: center; }
     .pin-card { background: var(--paper); color: var(--ink); border-radius: 24px; padding: 2rem 1.5rem; width: min(340px, 100%); box-shadow: 0 15px 35px rgba(0,0,0,.3); }
-    .pin-input { font-size: 1.8rem; letter-spacing: .4em; text-align: center; width: 100%; padding: .6rem; border: 2px solid var(--border); border-radius: 12px; margin: 1.2rem 0; outline: none; }
+    .pin-input { font-size: 1.4rem; letter-spacing: .2em; text-align: center; width: 100%; padding: .6rem 2.8rem .6rem 1rem; border: 2px solid var(--border); border-radius: 12px; outline: none; box-sizing: border-box; }
     .pin-input:focus { border-color: var(--green); }
+    .pin-input-wrap { position: relative; width: 100%; margin: 1.2rem 0; }
+    .pin-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; font-size: 1.2rem; padding: 4px 6px; line-height: 1; color: var(--muted); border-radius: 6px; }
+    .pin-toggle-btn:hover { color: var(--ink); }
     
     .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -110,7 +113,10 @@
     <div class="pin-card">
       <h3 style="color: var(--green); margin-bottom: .4rem;">Kunci Admin</h3>
       <p style="font-size: .85rem; color: var(--muted);">Masukkan PIN untuk mengelola katalog</p>
-      <input type="password" id="pinInput" class="pin-input" maxlength="6" placeholder="••••" autofocus inputmode="numeric">
+      <div class="pin-input-wrap">
+        <input type="password" id="pinInput" class="pin-input" placeholder="••••" autofocus>
+        <button type="button" class="pin-toggle-btn" id="btnTogglePin" aria-label="Lihat PIN">👁️</button>
+      </div>
       <button class="btn btn-primary btn-block" id="btnUnlock">Buka Admin</button>
       <p style="font-size: .75rem; color: var(--muted); margin-top: .8rem;">Hubungi admin jika lupa PIN</p>
     </div>
@@ -448,7 +454,7 @@
   </dialog>
 
   <!-- Script data bawaan -->
-  <script src="products.js?v=10"></script>
+  <script src="products.js?v=11"></script>
 
   <!-- Admin Logic -->
   <script>
@@ -477,6 +483,15 @@
     const pinLock = document.getElementById("pinLock");
     const pinInput = document.getElementById("pinInput");
     const btnUnlock = document.getElementById("btnUnlock");
+    const btnTogglePin = document.getElementById("btnTogglePin");
+
+    if (btnTogglePin) {
+      btnTogglePin.onclick = () => {
+        const isPass = pinInput.type === "password";
+        pinInput.type = isPass ? "text" : "password";
+        btnTogglePin.textContent = isPass ? "🙈" : "👁️";
+      };
+    }
 
     if (sessionStorage.getItem(PIN_KEY) !== "valid") {
       pinLock.style.display = "grid";
