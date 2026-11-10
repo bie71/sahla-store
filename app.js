@@ -168,7 +168,8 @@
     if (!UI.ring) return;
     const items = products.slice(0, 8); // show top 8
     const count = items.length;
-    const r = 360; // radius
+    const isMobile = window.innerWidth < 640;
+    const r = isMobile ? 180 : 360; // radius proporsional mobile & desktop
     UI.ring.innerHTML = items.map((p, i) => `
       <div class="ring-item" style="transform: rotateY(${i * (360/count)}deg) translateZ(${r}px)">
         <img src="${p.img}" alt="">

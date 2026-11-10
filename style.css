@@ -15,8 +15,9 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 80px; }
-body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; overflow-x: hidden; overflow-x: clip; width: 100%; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; overflow-x: clip; width: 100%; -webkit-font-smoothing: antialiased; }
+main { overflow-x: hidden; overflow-x: clip; width: 100%; }
 img { display: block; max-width: 100%; }
 a { color: inherit; }
 button { font: inherit; cursor: pointer; }
@@ -80,7 +81,8 @@ em { font-style: italic; color: var(--terra); }
 @keyframes bob { 50% { translate: 0 -10px; } }
 
 /* marquee */
-.marquee { background: var(--green); color: var(--sand); overflow: hidden; padding: 1rem 0; transform: rotate(-1.5deg); margin: 0 -2rem; }
+.marquee-wrap { overflow: hidden; width: 100%; max-width: 100%; }
+.marquee { background: var(--green); color: var(--sand); overflow: hidden; padding: 1rem 0; transform: rotate(-1.5deg); margin: 0 -2rem; width: calc(100% + 4rem); }
 .marquee-track { display: flex; gap: 3rem; width: max-content; animation: slide 28s linear infinite; font-family: var(--serif); font-size: clamp(1.2rem, 2.5vw, 1.8rem); }
 .marquee-track span::after { content: "✦"; margin-left: 3rem; color: var(--terra); }
 @keyframes slide { to { transform: translateX(-50%); } }
@@ -187,8 +189,12 @@ em { font-style: italic; color: var(--terra); }
   .steps { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
+  .nav { padding: .75rem 1rem; }
+  .brand { font-size: 1.1rem; gap: .4rem; }
+  .brand-mark { width: 30px; height: 30px; font-size: 1rem; }
+  .nav .btn-wa { padding: .45rem .85rem; font-size: .82rem; min-height: 38px; flex-shrink: 0; }
   .nav-links { display: none; }
-  .grid { grid-template-columns: repeat(2, 1fr); }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: .8rem; }
   .card-body { padding: .75rem .8rem .9rem; }
   .card h3 { font-size: .88rem; }
   .price b { font-size: 1rem; }
@@ -198,10 +204,13 @@ em { font-style: italic; color: var(--terra); }
   .search { width: 100%; }
   .modal-body { grid-template-columns: 1fr; }
   .modal-body img { aspect-ratio: 1; }
-  .footer { grid-template-columns: 1fr; text-align: center; }
+  .footer { grid-template-columns: 1fr; text-align: center; padding: 2.5rem 1rem calc(5.5rem + env(safe-area-inset-bottom)); gap: 1.25rem; }
   .footer p { margin-inline: auto; }
   .footer .brand { justify-content: center; }
+  .footer .btn-wa { justify-self: center; width: min(280px, 100%); margin: 0 auto; }
   .tag-float { right: -8px; }
+  .fab { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 54px; height: 54px; }
+  .fab svg { width: 26px; height: 26px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
