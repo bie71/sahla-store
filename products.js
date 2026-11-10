@@ -3,12 +3,13 @@ const STORE_SETTINGS = {
   "storeName": "Sahla Store",
   "waNumber": "6281234567890",
   "heroEyebrow": "Ready stock • Update tiap hari",
-  "heroTitle": "Cantik, nyaman,<br><em>harga bersahabat.</em>",
+  "heroTitle": "Cantik, nyaman, harga bersahabat.",
   "heroLead": "Gamis, daster, baju anak sampai HP & laptop — semua yang lagi ready ada di sini. Tinggal pilih, klik, chat.",
   "bannerEyebrow": "Promo Jumat Berkah",
-  "bannerTitle": "Beli 2 daster,<br>gratis 1 celamis.",
+  "bannerTitle": "Beli 2 daster, gratis 1 celamis.",
   "bannerMsg": "Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)",
-  "bannerBg": "img/banner.jpg"
+  "bannerBg": "img/banner.jpg",
+  "adminPin": "123456"
 };
 
 const WA_NUMBER = STORE_SETTINGS.waNumber;
