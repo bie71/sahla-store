@@ -1,10 +1,10 @@
 # Panduan Penggunaan Katalog Online Sahla Store
 
-Selamat! Web katalog produk sudah siap. Web ini didesain agar mudah dikelola langsung dari HP bini bos bie lewat **Halaman Admin**.
+Selamat! Web katalog produk sudah siap. Web ini didesain agar mudah dikelola langsung dari HP lewat **Halaman Admin**.
 
 ## 1. Alamat Web & Admin
 - **Web Pelanggan:** `https://sahla-store.vercel.app` (Link yang disebar ke status WA)
-- **Halaman Admin:** `https://sahla-store.vercel.app/admin.html` (Tempat bini edit produk/banner)
+- **Halaman Admin:** `https://sahla-store.vercel.app/admin.html` (Tempat edit produk/banner)
 
 ---
 
@@ -23,7 +23,7 @@ Buka halaman `/admin.html` di browser HP, masukkan PIN: **1234**.
 3. Klik **"Simpan Pengaturan Toko"**.
 
 ### C. Publikasi ke Web (Agar Live Dilihat Semua Orang)
-Agar perubahan yang dibuat di HP bini bisa dilihat oleh pelanggan di internet, bini harus menekan tombol **"Publikasikan Sekarang"** di tab ke-3.
+Agar perubahan yang dibuat di HP bisa dilihat oleh pelanggan di internet, tekan tombol **"Publikasikan Sekarang"** di tab ke-3.
 
 1. Buka tab **"🚀 Publikasi ke Web"**.
 2. (Hanya sekali) Isi **GitHub Token** (lihat cara buat di bawah).
@@ -32,8 +32,8 @@ Agar perubahan yang dibuat di HP bini bisa dilihat oleh pelanggan di internet, b
 
 ---
 
-## 3. Cara Setup Sekali Saja (Tugas Bos Bie)
-Agar tombol "Publikasikan Sekarang" berfungsi, bos bie perlu melakukan langkah ini:
+## 3. Cara Setup Sekali Saja (Setup Token GitHub)
+Agar tombol "Publikasikan Sekarang" berfungsi, lakukan langkah ini:
 
 ### Step 1: Upload ke GitHub
 Jalankan perintah ini di terminal folder project:
@@ -52,16 +52,16 @@ git push -u origin main
 2. Pilih project `sahla-store`.
 3. Masuk ke **Settings** -> **Git**.
 4. Klik **"Connect"** ke repository `bie71/sahla-store`.
-5. Sekarang, setiap bini klik "Publikasikan" dari Admin, Vercel akan otomatis update webnya.
+5. Sekarang, setiap klik "Publikasikan" dari Admin, Vercel akan otomatis update webnya.
 
-### Step 3: Buat GitHub Token untuk Bini
-Bini butuh Token ini untuk disimpan di Admin HP-nya:
+### Step 3: Buat GitHub Token untuk Admin
+Token ini dibutuhkan untuk disimpan di Halaman Admin:
 1. Buka [GitHub Token Settings](https://github.com/settings/tokens).
 2. Klik **"Generate new token (classic)"**.
 3. Beri nama: "Katalog Sahla Admin".
 4. Centang kotak **`repo`** (Full control of private repositories).
 5. Klik **"Generate token"**.
-6. **SALIN TOKENNYA** (contoh: `ghp_xxxxxxxx`) dan kirim ke WA bini untuk dimasukkan ke halaman Admin.
+6. **SALIN TOKENNYA** (contoh: `ghp_xxxxxxxx`) untuk dimasukkan ke halaman Admin tab Publikasikan.
 
 ---
 

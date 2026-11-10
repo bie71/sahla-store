@@ -22,7 +22,7 @@ Landing page responsif web & mobile dengan efek 3D tilt, scroll parallax, katego
 ## Cara Ganti Nomor WhatsApp
 Buka file `app.js` di baris paling atas:
 ```js
-const WA_NUMBER = "6281234567890"; // Ganti dengan nomor WhatsApp bini (format 628...)
+const WA_NUMBER = "6281234567890"; // Ganti dengan nomor WhatsApp toko (format 628...)
 ```
 
 ## Cara Tambah / Edit Produk
