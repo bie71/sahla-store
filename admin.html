@@ -178,34 +178,6 @@
 
         <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
 
-        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .8rem;">Banner Promo Utama</h3>
-
-        <div class="form-group">
-          <label>Foto Background Banner</label>
-          <div class="upload-box" id="bannerUploadBox">
-            <img id="bannerPreview" class="upload-preview" src="img/banner.jpg" alt="Preview Banner" style="max-width: 100%; height: 120px;">
-            <p style="font-size: .8rem; font-weight: 600; color: var(--green);">📸 Ganti Foto Background Banner</p>
-            <input type="file" id="bannerFileInput" accept="image/*" style="display: none;">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Judul Kecil Promo (Eyebrow)</label>
-          <input type="text" id="setBannerEyebrow" placeholder="Contoh: Promo Jumat Berkah">
-        </div>
-
-        <div class="form-group">
-          <label>Teks Promo Besar</label>
-          <input type="text" id="setBannerTitle" placeholder="Contoh: Beli 2 daster, gratis 1 celamis.">
-        </div>
-
-        <div class="form-group">
-          <label>Pesan Otomatis WhatsApp Promo</label>
-          <input type="text" id="setBannerMsg" placeholder="Pesan otomatis ketika pembeli klik Ambil Promo">
-        </div>
-
-        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
-
         <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .8rem;">Teks Header Utama (Hero)</h3>
 
         <div class="form-group">
@@ -287,7 +259,15 @@
 
         <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
 
-        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .4rem;">Teks Berjalan (Marquee Ticker)</h3>
+        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .4rem;">Banner Promo Slider</h3>
+        <p class="help-text" style="margin-bottom: .75rem;">Slider banner promo yang bisa digeser (auto-slide).</p>
+
+        <div id="promoBannersContainer">
+          <!-- Render via JS -->
+        </div>
+        <button type="button" class="btn btn-outline" id="addPromoBanner" style="margin-top: .5rem; width: 100%;">+ Tambah Banner Promo</button>
+
+        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
         <p class="help-text" style="margin-bottom: .75rem;">Kata/kategori yang berjalan di bawah banner hero. Pisahkan dengan tanda koma.</p>
 
         <div class="form-group">
@@ -468,7 +448,7 @@
   </dialog>
 
   <!-- Script data bawaan -->
-  <script src="products.js?v=7"></script>
+  <script src="products.js?v=8"></script>
 
   <!-- Admin Logic -->
   <script>
@@ -691,17 +671,13 @@
     // PENGATURAN TOKO & BANNER
     const setStoreName = document.getElementById("setStoreName");
     const setWaNumber = document.getElementById("setWaNumber");
-    const setBannerEyebrow = document.getElementById("setBannerEyebrow");
-    const setBannerTitle = document.getElementById("setBannerTitle");
-    const setBannerMsg = document.getElementById("setBannerMsg");
-    const bannerPreview = document.getElementById("bannerPreview");
-    const bannerFileInput = document.getElementById("bannerFileInput");
-    const bannerUploadBox = document.getElementById("bannerUploadBox");
     const setHeroEyebrow = document.getElementById("setHeroEyebrow");
     const setHeroTitle = document.getElementById("setHeroTitle");
     const setHeroLead = document.getElementById("setHeroLead");
     const setHeroTag = document.getElementById("setHeroTag");
     const setMarqueeItems = document.getElementById("setMarqueeItems");
+    const promoBannersContainer = document.getElementById("promoBannersContainer");
+    const addPromoBannerBtn = document.getElementById("addPromoBanner");
 
     const card1Preview = document.getElementById("card1Preview");
     const setCard1Caption = document.getElementById("setCard1Caption");
@@ -752,6 +728,94 @@
     const setAdminPin = document.getElementById("setAdminPin");
     const btnSimpanToko = document.getElementById("btnSimpanToko");
 
+    function renderPromoBannersAdmin(banners) {
+      promoBannersContainer.innerHTML = banners.map((b, i) => `
+        <div class="banner-admin-card" style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; background: var(--bg-soft);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem;">
+            <strong style="font-size: .9rem;">Banner Promo #${i + 1}</strong>
+            ${banners.length > 1 ? `<button type="button" class="btn btn-outline btn-del-banner" data-index="${i}" style="color: var(--danger); padding: .2rem .5rem; font-size: .8rem;">Hapus</button>` : ''}
+          </div>
+          <div class="form-group" style="margin-bottom: .5rem;">
+            <label style="font-size: .8rem;">Subjudul (Eyebrow)</label>
+            <input type="text" class="p-eyebrow" value="${escapeHtml(b.eyebrow || '')}" placeholder="Promo Jumat Berkah">
+          </div>
+          <div class="form-group" style="margin-bottom: .5rem;">
+            <label style="font-size: .8rem;">Judul Promo</label>
+            <input type="text" class="p-title" value="${escapeHtml(b.title || '')}" placeholder="Beli 2 daster, gratis 1 celamis.">
+          </div>
+          <div class="form-group" style="margin-bottom: .5rem;">
+            <label style="font-size: .8rem;">Teks Chat WhatsApp saat Diklik</label>
+            <input type="text" class="p-msg" value="${escapeHtml(b.msg || '')}" placeholder="Halo kak, mau ikut promo...">
+          </div>
+          <div class="form-group" style="margin-bottom: .5rem;">
+            <label style="font-size: .8rem;">Teks Tombol</label>
+            <input type="text" class="p-btntext" value="${escapeHtml(b.btnText || 'Ambil Promo')}" placeholder="Ambil Promo">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: .8rem;">Gambar Background Promo</label>
+            <div style="display: flex; gap: .5rem; align-items: center;">
+              <img src="${b.bg || 'img/banner.jpg'}" class="p-bg-prev" style="width: 50px; height: 35px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
+              <input type="file" class="p-bg-file" accept="image/*" style="font-size: .8rem;">
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      promoBannersContainer.querySelectorAll(".p-bg-file").forEach((input, i) => {
+        input.onchange = e => {
+          const file = e.target.files[0];
+          if (!file) return;
+          compressImage(file, 1200, 0.8, base64 => {
+            const prev = promoBannersContainer.querySelectorAll(".p-bg-prev")[i];
+            if (prev) prev.src = base64;
+          });
+        };
+      });
+
+      promoBannersContainer.querySelectorAll(".btn-del-banner").forEach(btn => {
+        btn.onclick = () => {
+          const idx = Number(btn.dataset.index);
+          const current = collectPromoBannersAdmin();
+          current.splice(idx, 1);
+          renderPromoBannersAdmin(current);
+        };
+      });
+    }
+
+    function collectPromoBannersAdmin() {
+      const cards = promoBannersContainer.querySelectorAll(".banner-admin-card");
+      const list = [];
+      cards.forEach(c => {
+        const eyebrow = c.querySelector(".p-eyebrow").value.trim();
+        const title = c.querySelector(".p-title").value.trim();
+        const msg = c.querySelector(".p-msg").value.trim();
+        const btnText = c.querySelector(".p-btntext").value.trim();
+        const bgPrev = c.querySelector(".p-bg-prev").src;
+        list.push({
+          eyebrow,
+          title,
+          msg,
+          btnText: btnText || "Ambil Promo",
+          bg: bgPrev
+        });
+      });
+      return list;
+    }
+
+    if (addPromoBannerBtn) {
+      addPromoBannerBtn.onclick = () => {
+        const current = collectPromoBannersAdmin();
+        current.push({
+          bg: "img/banner.jpg",
+          eyebrow: "Promo Baru",
+          title: "Judul Promo Tambahan",
+          msg: "Halo kak, mau tanya promo baru ini",
+          btnText: "Ambil Promo"
+        });
+        renderPromoBannersAdmin(current);
+      };
+    }
+
     function ensureHeroCardsState() {
       if (!state.settings.heroCards || !Array.isArray(state.settings.heroCards) || state.settings.heroCards.length < 3) {
         state.settings.heroCards = [
@@ -784,10 +848,6 @@
       const s = state.settings;
       setStoreName.value = s.storeName || "Sahla Store";
       setWaNumber.value = s.waNumber || "6281234567890";
-      setBannerEyebrow.value = s.bannerEyebrow || "";
-      setBannerTitle.value = s.bannerTitle ? s.bannerTitle.replace(/<br>/g, " ") : "";
-      setBannerMsg.value = s.bannerMsg || "";
-      bannerPreview.src = s.bannerBg || "img/banner.jpg";
       setHeroEyebrow.value = s.heroEyebrow || "";
       setHeroTitle.value = s.heroTitle ? s.heroTitle.replace(/<br>/g, " ").replace(/<em>|<\/em>/g, "") : "";
       setHeroLead.value = s.heroLead || "";
@@ -798,6 +858,28 @@
       } else {
         setMarqueeItems.value = s.marqueeItems || "Gamis, Baju Dewasa, Baju Anak, Daster, Celamis, Tyso, HP, Laptop";
       }
+
+      let pBanners = [];
+      if (Array.isArray(s.promoBanners) && s.promoBanners.length > 0) {
+        pBanners = s.promoBanners;
+      } else if (s.bannerTitle || s.bannerBg) {
+        pBanners = [{
+          bg: s.bannerBg || "img/banner.jpg",
+          eyebrow: s.bannerEyebrow || "Promo Jumat Berkah",
+          title: s.bannerTitle || "Beli 2 daster, gratis 1 celamis.",
+          msg: s.bannerMsg || "Halo kak, mau tanya promo.",
+          btnText: "Ambil Promo"
+        }];
+      } else {
+        pBanners = [{
+          bg: "img/banner.jpg",
+          eyebrow: "Promo Jumat Berkah",
+          title: "Beli 2 daster, gratis 1 celamis.",
+          msg: "Halo kak, mau ikut promo",
+          btnText: "Ambil Promo"
+        }];
+      }
+      renderPromoBannersAdmin(pBanners);
 
       const cards = s.heroCards && s.heroCards.length >= 3 ? s.heroCards : [
         { img: "img/h1.jpg", caption: "Gamis Syari" },
@@ -834,11 +916,8 @@
     };
 
     btnSimpanToko.onclick = () => {
-      state.settings.storeName = setStoreName.value.trim() || "Sahla Store";
-      state.settings.waNumber = setWaNumber.value.trim() || "6281234567890";
-      state.settings.bannerEyebrow = setBannerEyebrow.value.trim();
-      state.settings.bannerTitle = setBannerTitle.value.trim();
-      state.settings.bannerMsg = setBannerMsg.value.trim();
+      state.settings.storeName = setStoreName.value.trim();
+      state.settings.waNumber = setWaNumber.value.trim();
       state.settings.heroEyebrow = setHeroEyebrow.value.trim();
       state.settings.heroTitle = setHeroTitle.value.trim();
       state.settings.heroLead = setHeroLead.value.trim();
@@ -847,6 +926,15 @@
         .split(",")
         .map(x => x.trim())
         .filter(Boolean);
+
+      const bannersList = collectPromoBannersAdmin();
+      state.settings.promoBanners = bannersList;
+      if (bannersList.length > 0) {
+        state.settings.bannerEyebrow = bannersList[0].eyebrow;
+        state.settings.bannerTitle = bannersList[0].title;
+        state.settings.bannerMsg = bannersList[0].msg;
+        state.settings.bannerBg = bannersList[0].bg;
+      }
 
       ensureHeroCardsState();
       state.settings.heroCards[0].caption = setCard1Caption.value.trim() || "Gamis Syari";

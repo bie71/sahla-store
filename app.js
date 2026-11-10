@@ -54,15 +54,108 @@
     });
   }
 
-  const bEye = document.querySelector(".banner .eyebrow");
-  if (bEye && settings.bannerEyebrow) bEye.textContent = settings.bannerEyebrow;
-  const bTitle = document.querySelector(".banner h2");
-  if (bTitle && settings.bannerTitle) bTitle.innerHTML = settings.bannerTitle;
-  const bBtn = document.querySelector(".banner [data-wa]");
-  if (bBtn && settings.bannerMsg) bBtn.dataset.msg = settings.bannerMsg;
-  const bBg = document.querySelector(".banner-bg");
-  if (bBg && settings.bannerBg) {
-    bBg.style.backgroundImage = `linear-gradient(rgba(31,59,45,.55), rgba(31,59,45,.75)), url("${settings.bannerBg}")`;
+  // Promo Banners Setup & Slider
+  let promoBanners = [];
+  if (Array.isArray(settings.promoBanners) && settings.promoBanners.length > 0) {
+    promoBanners = settings.promoBanners;
+  } else if (settings.bannerTitle || settings.bannerBg) {
+    promoBanners = [{
+      bg: settings.bannerBg || "img/banner.jpg",
+      eyebrow: settings.bannerEyebrow || "Promo Jumat Berkah",
+      title: settings.bannerTitle || "Beli 2 daster,<br>gratis 1 celamis.",
+      msg: settings.bannerMsg || "Halo kak, mau tanya promo toko.",
+      btnText: "Ambil Promo"
+    }];
+  }
+
+  const bannerSliderEl = document.getElementById("bannerSlider");
+  const bannerDotsEl = document.getElementById("bannerDots");
+  const bannerPrevEl = document.getElementById("bannerPrev");
+  const bannerNextEl = document.getElementById("bannerNext");
+
+  if (bannerSliderEl && promoBanners.length > 0) {
+    bannerSliderEl.innerHTML = promoBanners.map((b, i) => `
+      <div class="banner-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
+        <div class="banner-bg" style="background-image: linear-gradient(rgba(31,59,45,.55), rgba(31,59,45,.75)), url('${b.bg || 'img/banner.jpg'}');"></div>
+        <div class="banner-copy">
+          ${b.eyebrow ? `<p class="eyebrow light">${b.eyebrow}</p>` : ''}
+          <h2>${b.title || ''}</h2>
+          <a href="#" data-wa data-msg="${b.msg || 'Halo kak, mau tanya promo toko.'}" class="btn btn-light">${b.btnText || 'Ambil Promo'}</a>
+        </div>
+      </div>
+    `).join("");
+
+    if (promoBanners.length > 1) {
+      if (bannerDotsEl) {
+        bannerDotsEl.innerHTML = promoBanners.map((_, i) => `
+          <button class="banner-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Slide ${i + 1}"></button>
+        `).join("");
+      }
+      if (bannerPrevEl) bannerPrevEl.style.display = "";
+      if (bannerNextEl) bannerNextEl.style.display = "";
+
+      let curBanner = 0;
+      let bannerTimer = null;
+
+      function goToBanner(idx) {
+        curBanner = (idx + promoBanners.length) % promoBanners.length;
+        const slides = bannerSliderEl.querySelectorAll(".banner-slide");
+        slides.forEach((sl, i) => sl.classList.toggle("active", i === curBanner));
+        if (bannerDotsEl) {
+          const dots = bannerDotsEl.querySelectorAll(".banner-dot");
+          dots.forEach((d, i) => d.classList.toggle("active", i === curBanner));
+        }
+      }
+
+      function startBannerAutoPlay() {
+        stopBannerAutoPlay();
+        bannerTimer = setInterval(() => {
+          goToBanner(curBanner + 1);
+        }, 5000);
+      }
+
+      function stopBannerAutoPlay() {
+        if (bannerTimer) clearInterval(bannerTimer);
+      }
+
+      startBannerAutoPlay();
+
+      if (bannerPrevEl) bannerPrevEl.onclick = () => { goToBanner(curBanner - 1); startBannerAutoPlay(); };
+      if (bannerNextEl) bannerNextEl.onclick = () => { goToBanner(curBanner + 1); startBannerAutoPlay(); };
+
+      if (bannerDotsEl) {
+        bannerDotsEl.onclick = e => {
+          const dot = e.target.closest(".banner-dot");
+          if (!dot) return;
+          goToBanner(Number(dot.dataset.index));
+          startBannerAutoPlay();
+        };
+      }
+
+      const bannerSection = document.getElementById("promoBannerSection");
+      if (bannerSection) {
+        bannerSection.addEventListener("mouseenter", stopBannerAutoPlay);
+        bannerSection.addEventListener("mouseleave", startBannerAutoPlay);
+
+        // Touch swipe on mobile
+        let tStartX = 0;
+        bannerSection.addEventListener("touchstart", e => {
+          tStartX = e.changedTouches[0].clientX;
+          stopBannerAutoPlay();
+        }, { passive: true });
+        bannerSection.addEventListener("touchend", e => {
+          const diff = e.changedTouches[0].clientX - tStartX;
+          if (Math.abs(diff) > 40) {
+            goToBanner(diff > 0 ? curBanner - 1 : curBanner + 1);
+          }
+          startBannerAutoPlay();
+        }, { passive: true });
+      }
+    } else {
+      if (bannerDotsEl) bannerDotsEl.style.display = "none";
+      if (bannerPrevEl) bannerPrevEl.style.display = "none";
+      if (bannerNextEl) bannerNextEl.style.display = "none";
+    }
   }
 
   // 3D Carousel Section

@@ -86,14 +86,22 @@
       <p class="empty" id="empty" hidden>Produk nggak ketemu. Coba kata lain atau <a href="#" data-wa>tanya langsung</a>.</p>
     </section>
 
-    <!-- PARALLAX BANNER -->
-    <section class="banner" aria-label="Promo">
-      <div class="banner-bg" ></div>
-      <div class="banner-copy">
-        <p class="eyebrow light">Promo Jumat Berkah</p>
-        <h2>Beli 2 daster,<br>gratis 1 celamis.</h2>
-        <a href="#" data-wa data-msg="Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)" class="btn btn-light">Ambil Promo</a>
+    <!-- PROMO BANNER SLIDER -->
+    <section class="banner" id="promoBannerSection" aria-label="Promo">
+      <div class="banner-slider" id="bannerSlider">
+        <!-- Render via JS -->
+        <div class="banner-slide active">
+          <div class="banner-bg"></div>
+          <div class="banner-copy">
+            <p class="eyebrow light">Promo Jumat Berkah</p>
+            <h2>Beli 2 daster,<br>gratis 1 celamis.</h2>
+            <a href="#" data-wa data-msg="Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)" class="btn btn-light">Ambil Promo</a>
+          </div>
+        </div>
       </div>
+      <div class="banner-dots" id="bannerDots"></div>
+      <button class="banner-nav prev" id="bannerPrev" aria-label="Banner Sebelumnya">‹</button>
+      <button class="banner-nav next" id="bannerNext" aria-label="Banner Berikutnya">›</button>
     </section>
 
     <!-- 3D RING CAROUSEL -->
@@ -148,7 +156,7 @@
     <div class="modal-body" id="modalBody"></div>
   </dialog>
 
-  <script src="products.js?v=7"></script>
-  <script src="app.js?v=7"></script>
+  <script src="products.js?v=8"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
