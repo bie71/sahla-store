@@ -85,6 +85,30 @@
     navUnggulan.style.display = isCarouselEnabled ? "" : "none";
   }
 
+  // Marquee Ticker
+  const marqueeTrack = document.querySelector(".marquee-track");
+  const marqueeWrap = document.querySelector(".marquee-wrap");
+  if (marqueeTrack) {
+    const rawItems = settings.marqueeItems;
+    let items = [];
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
+      items = rawItems;
+    } else if (typeof rawItems === "string" && rawItems.trim()) {
+      items = rawItems.split(",").map(s => s.trim()).filter(Boolean);
+    }
+
+    if (rawItems !== undefined && items.length === 0) {
+      if (marqueeWrap) marqueeWrap.style.display = "none";
+    } else {
+      if (marqueeWrap) marqueeWrap.style.display = "";
+      if (items.length > 0) {
+        const itemSpans = items.map(t => `<span>${t}</span>`).join("");
+        // Duplicate once for infinite CSS scroll
+        marqueeTrack.innerHTML = itemSpans + itemSpans;
+      }
+    }
+  }
+
   const UI = {
     nav: document.getElementById("nav"),
     grid: document.getElementById("grid"),

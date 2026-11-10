@@ -287,6 +287,17 @@
 
         <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
 
+        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .4rem;">Teks Berjalan (Marquee Ticker)</h3>
+        <p class="help-text" style="margin-bottom: .75rem;">Kata/kategori yang berjalan di bawah banner hero. Pisahkan dengan tanda koma.</p>
+
+        <div class="form-group">
+          <label>Daftar Teks Berjalan</label>
+          <input type="text" id="setMarqueeItems" placeholder="Gamis, Baju Dewasa, Baju Anak, Daster, Celamis, Tyso, HP, Laptop">
+          <p class="help-text">Kosongkan jika ingin menyembunyikan teks berjalan.</p>
+        </div>
+
+        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
+
         <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .4rem;">3D Carousel Produk (Unggulan)</h3>
         <p class="help-text" style="margin-bottom: .85rem;">Pengaturan carousel produk 3D yang berputar di bawah banner promo.</p>
 
@@ -457,7 +468,7 @@
   </dialog>
 
   <!-- Script data bawaan -->
-  <script src="products.js?v=4"></script>
+  <script src="products.js?v=7"></script>
 
   <!-- Admin Logic -->
   <script>
@@ -690,6 +701,7 @@
     const setHeroTitle = document.getElementById("setHeroTitle");
     const setHeroLead = document.getElementById("setHeroLead");
     const setHeroTag = document.getElementById("setHeroTag");
+    const setMarqueeItems = document.getElementById("setMarqueeItems");
 
     const card1Preview = document.getElementById("card1Preview");
     const setCard1Caption = document.getElementById("setCard1Caption");
@@ -781,6 +793,12 @@
       setHeroLead.value = s.heroLead || "";
       setHeroTag.value = s.heroTag !== undefined ? s.heroTag : "Diskon s/d 30%";
 
+      if (Array.isArray(s.marqueeItems)) {
+        setMarqueeItems.value = s.marqueeItems.join(", ");
+      } else {
+        setMarqueeItems.value = s.marqueeItems || "Gamis, Baju Dewasa, Baju Anak, Daster, Celamis, Tyso, HP, Laptop";
+      }
+
       const cards = s.heroCards && s.heroCards.length >= 3 ? s.heroCards : [
         { img: "img/h1.jpg", caption: "Gamis Syari" },
         { img: "img/h2.jpg", caption: "Baju Anak" },
@@ -825,6 +843,10 @@
       state.settings.heroTitle = setHeroTitle.value.trim();
       state.settings.heroLead = setHeroLead.value.trim();
       state.settings.heroTag = setHeroTag.value.trim();
+      state.settings.marqueeItems = setMarqueeItems.value
+        .split(",")
+        .map(x => x.trim())
+        .filter(Boolean);
 
       ensureHeroCardsState();
       state.settings.heroCards[0].caption = setCard1Caption.value.trim() || "Gamis Syari";
