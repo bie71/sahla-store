@@ -164,27 +164,113 @@
   }
 
   // 3D Ring Carousel
+  function getRingConfig() {
+    const isMobile = window.innerWidth < 640;
+    const items = products.slice(0, 8);
+    const count = items.length;
+    const r = isMobile ? 195 : 360;
+    return { isMobile, items, count, r };
+  }
+
+  function updateRingCards() {
+    if (!UI.ring) return;
+    const { isMobile, count, r } = getRingConfig();
+    const cards = UI.ring.querySelectorAll(".ring-item");
+    const step = 360 / count;
+
+    cards.forEach((card, i) => {
+      const baseAngle = i * step;
+      let diff = ((baseAngle + ringAngle) % 360 + 360) % 360;
+      if (diff > 180) diff -= 360;
+      const absDiff = Math.abs(diff);
+
+      if (isMobile) {
+        if (absDiff < 25) {
+          card.style.opacity = "1";
+          card.style.transform = `rotateY(${baseAngle}deg) translateZ(${r}px) scale(1.04)`;
+          card.style.pointerEvents = "auto";
+          card.style.filter = "none";
+          card.style.zIndex = "10";
+        } else if (absDiff < 80) {
+          card.style.opacity = "0.72";
+          card.style.transform = `rotateY(${baseAngle}deg) translateZ(${r}px) scale(0.88)`;
+          card.style.pointerEvents = "auto";
+          card.style.filter = "brightness(0.88)";
+          card.style.zIndex = "5";
+        } else {
+          card.style.opacity = "0";
+          card.style.transform = `rotateY(${baseAngle}deg) translateZ(${r}px) scale(0.7)`;
+          card.style.pointerEvents = "none";
+          card.style.zIndex = "1";
+        }
+      } else {
+        if (absDiff > 115) {
+          card.style.opacity = "0";
+          card.style.pointerEvents = "none";
+        } else {
+          card.style.opacity = absDiff < 25 ? "1" : "0.75";
+          card.style.transform = `rotateY(${baseAngle}deg) translateZ(${r}px) scale(${absDiff < 25 ? 1.05 : 0.92})`;
+          card.style.pointerEvents = "auto";
+        }
+      }
+    });
+  }
+
   function initRing() {
     if (!UI.ring) return;
-    const items = products.slice(0, 8); // show top 8
-    const count = items.length;
-    const isMobile = window.innerWidth < 640;
-    const r = isMobile ? 180 : 360; // radius proporsional mobile & desktop
+    const { items, count, r } = getRingConfig();
     UI.ring.innerHTML = items.map((p, i) => `
-      <div class="ring-item" style="transform: rotateY(${i * (360/count)}deg) translateZ(${r}px)">
-        <img src="${p.img}" alt="">
+      <div class="ring-item" data-index="${i}" onclick="window.onRingCardClick(${i}, ${p.id})" style="transform: rotateY(${i * (360/count)}deg) translateZ(${r}px); transition: transform .6s cubic-bezier(.2,.7,.2,1), opacity .4s ease, filter .4s ease; cursor: pointer;">
+        <img src="${p.img}" alt="${p.name}">
         <div><b>${p.name}</b>Rp ${p.price.toLocaleString("id-ID")}</div>
       </div>
     `).join("");
+    updateRingCards();
   }
 
   function rotateRing(dir) {
     if (!UI.ring) return;
-    ringAngle += dir * (360 / Math.min(products.length, 8));
+    const count = Math.min(products.length, 8);
+    const step = 360 / count;
+    ringAngle += dir * step;
     UI.ring.style.transform = `rotateY(${ringAngle}deg)`;
+    updateRingCards();
   }
   if (UI.ringNext) UI.ringNext.onclick = () => rotateRing(-1);
   if (UI.ringPrev) UI.ringPrev.onclick = () => rotateRing(1);
+
+  window.onRingCardClick = (idx, id) => {
+    const count = Math.min(products.length, 8);
+    const step = 360 / count;
+    const baseAngle = idx * step;
+    let diff = ((baseAngle + ringAngle) % 360 + 360) % 360;
+    if (diff > 180) diff -= 360;
+    if (Math.abs(diff) < 25) {
+      window.openProduct(id);
+    } else {
+      rotateRing(diff > 0 ? -1 : 1);
+    }
+  };
+
+  // Touch swipe gesture for mobile ring
+  const ringWrap = document.querySelector(".ring-wrap");
+  if (ringWrap) {
+    let touchStartX = 0;
+    ringWrap.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    ringWrap.addEventListener("touchend", (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 30) {
+        rotateRing(diff > 0 ? 1 : -1);
+      }
+    }, { passive: true });
+  }
+
+  window.addEventListener("resize", () => {
+    initRing();
+  });
 
   // External APIs
   window.openProduct = (id) => {

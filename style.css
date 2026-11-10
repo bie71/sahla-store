@@ -204,6 +204,9 @@ em { font-style: italic; color: var(--terra); }
   .search { width: 100%; }
   .modal-body { grid-template-columns: 1fr; }
   .modal-body img { aspect-ratio: 1; }
+  .ring-wrap { perspective: 950px; height: 320px; }
+  .ring { width: 135px; }
+  .ring-item { box-shadow: 0 15px 35px -15px rgba(0,0,0,.45); }
   .footer { grid-template-columns: 1fr; text-align: center; padding: 2.5rem 1rem calc(5.5rem + env(safe-area-inset-bottom)); gap: 1.25rem; }
   .footer p { margin-inline: auto; }
   .footer .brand { justify-content: center; }
