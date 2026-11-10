@@ -344,7 +344,10 @@
 
         <div class="form-group">
           <label>GitHub Personal Access Token (PAT)</label>
-          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+          <div style="position: relative; width: 100%;">
+            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" style="padding-right: 2.5rem;">
+            <button type="button" id="btnToggleGhToken" aria-label="Lihat Token" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; font-size: 1.1rem; padding: 4px; color: var(--muted);">👁️</button>
+          </div>
           <p class="help-text">Token dengan hak akses <code>repo</code>.</p>
         </div>
 
@@ -428,11 +431,11 @@
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: .75rem;">
         <div class="form-group">
           <label>Harga Jual (Rp) *</label>
-          <input type="number" id="prodPrice" required placeholder="85000">
+          <input type="text" id="prodPrice" required placeholder="85.000" inputmode="numeric">
         </div>
         <div class="form-group">
           <label>Harga Coret (Rp)</label>
-          <input type="number" id="prodOldPrice" placeholder="100000 (jika ada)">
+          <input type="text" id="prodOldPrice" placeholder="100.000 (jika ada)" inputmode="numeric">
         </div>
       </div>
 
@@ -454,7 +457,7 @@
   </dialog>
 
   <!-- Script data bawaan -->
-  <script src="products.js?v=12"></script>
+  <script src="products.js?v=13"></script>
 
   <!-- Admin Logic -->
   <script>
@@ -627,14 +630,45 @@
     btnCloseModal.onclick = () => modalProduk.close();
     btnBatalProduk.onclick = () => modalProduk.close();
 
+    const prodPriceInput = document.getElementById("prodPrice");
+    const prodOldPriceInput = document.getElementById("prodOldPrice");
+
+    function formatNumberThousand(val) {
+      if (!val && val !== 0) return "";
+      const num = String(val).replace(/\D/g, "");
+      if (!num) return "";
+      return Number(num).toLocaleString("id-ID");
+    }
+
+    function parseFormattedNumber(val) {
+      if (!val) return 0;
+      return parseInt(String(val).replace(/\D/g, ""), 10) || 0;
+    }
+
+    function setupThousandSeparator(input) {
+      if (!input) return;
+      input.addEventListener("input", () => {
+        const curPos = input.selectionStart;
+        const oldLen = input.value.length;
+        const formatted = formatNumberThousand(input.value);
+        input.value = formatted;
+        const newLen = formatted.length;
+        const newPos = Math.max(0, curPos + (newLen - oldLen));
+        input.setSelectionRange(newPos, newPos);
+      });
+    }
+
+    setupThousandSeparator(prodPriceInput);
+    setupThousandSeparator(prodOldPriceInput);
+
     window.editProduk = id => {
       const p = state.products.find(x => x.id === id);
       if (!p) return;
       document.getElementById("modalProdukTitle").textContent = "Edit Produk";
       document.getElementById("prodId").value = p.id;
       document.getElementById("prodName").value = p.name;
-      document.getElementById("prodPrice").value = p.price;
-      document.getElementById("prodOldPrice").value = p.old || "";
+      prodPriceInput.value = formatNumberThousand(p.price);
+      prodOldPriceInput.value = p.old ? formatNumberThousand(p.old) : "";
       document.getElementById("prodBadge").value = p.badge || "";
       document.getElementById("prodSizes").value = p.sizes ? p.sizes.join(", ") : "";
       document.getElementById("prodDesc").value = p.desc || "";
@@ -675,13 +709,13 @@
         id: id ? parseInt(id) : Date.now(),
         cat: cat || "Umum",
         name: document.getElementById("prodName").value.trim(),
-        price: parseInt(document.getElementById("prodPrice").value) || 0,
+        price: parseFormattedNumber(prodPriceInput.value),
         img: prodImgUrl.value.trim() || prodPreview.src,
         badge: document.getElementById("prodBadge").value.trim() || undefined,
         sizes: sizes,
         desc: document.getElementById("prodDesc").value.trim()
       };
-      const oldPrice = parseInt(document.getElementById("prodOldPrice").value);
+      const oldPrice = parseFormattedNumber(prodOldPriceInput.value);
       if (oldPrice) prodData.old = oldPrice;
 
       if (id) {
@@ -999,10 +1033,19 @@
 
     // PUBLISH KE GITHUB API
     const ghToken = document.getElementById("ghToken");
+    const btnToggleGhToken = document.getElementById("btnToggleGhToken");
     const ghRepo = document.getElementById("ghRepo");
     const ghBranch = document.getElementById("ghBranch");
     const btnPublishGitHub = document.getElementById("btnPublishGitHub");
     const publishBtnText = document.getElementById("publishBtnText");
+
+    if (btnToggleGhToken) {
+      btnToggleGhToken.onclick = () => {
+        const isPass = ghToken.type === "password";
+        ghToken.type = isPass ? "text" : "password";
+        btnToggleGhToken.textContent = isPass ? "🙈" : "👁️";
+      };
+    }
 
     // Load credential cache
     ghToken.value = localStorage.getItem("sahla_gh_token") || "";
