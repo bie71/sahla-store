@@ -183,10 +183,27 @@
       return matchCat && matchSearch;
     });
 
-    UI.grid.innerHTML = filtered.map((p, i) => `
+    UI.grid.innerHTML = filtered.map((p, i) => {
+      let badges = [];
+      if (Array.isArray(p.badge)) {
+        badges = p.badge;
+      } else if (typeof p.badge === "string" && p.badge.trim()) {
+        badges = p.badge.split(",").map(b => b.trim()).filter(Boolean);
+      }
+      const badgesHtml = badges.length ? `
+        <div class="badges-wrap">
+          ${badges.map(b => {
+            const bl = b.toLowerCase();
+            const cls = bl.includes('promo') || bl.includes('hot') ? 'hot' : (bl.includes('baru') || bl.includes('new') ? 'new' : (bl.includes('diskon') || bl.includes('sale') ? 'sale' : ''));
+            return `<span class="badge ${cls}">${b}</span>`;
+          }).join("")}
+        </div>
+      ` : "";
+
+      return `
       <article class="card reveal" style="transition-delay: ${i % 4 * 0.1}s">
         <button class="card-img" onclick="window.openProduct(${p.id})">
-          ${p.badge ? `<span class="badge ${p.badge === 'Promo' ? 'hot' : ''}">${p.badge}</span>` : ""}
+          ${badgesHtml}
           <img src="${p.img}" alt="${p.name}" loading="lazy">
         </button>
         <div class="card-body">
@@ -199,7 +216,8 @@
           <a href="#" class="btn btn-wa btn-sm" onclick="window.orderWA(event, ${p.id})">Pesan via WA</a>
         </div>
       </article>
-    `).join("");
+    `;
+    }).join("");
 
     if (UI.empty) UI.empty.hidden = filtered.length > 0;
 
