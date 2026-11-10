@@ -10,7 +10,7 @@ const STORE_SETTINGS = {
   "bannerMsg": "Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)",
   "bannerBg": "img/banner.jpg",
   "adminPin": "sahla@",
-  "heroTag": "Diskon s/d 30%",
+  "heroTag": "New Arrival",
   "heroCards": [
     {
       "img": "img/h1.jpg",
