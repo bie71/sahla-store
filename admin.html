@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Admin Sahla Store — Kelola Katalog & Banner</title>
+  <meta name="theme-color" content="#1f3b2d">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f0e8;
+      --paper: #ffffff;
+      --card-bg: #fffbf5;
+      --ink: #1a1714;
+      --muted: #6e6458;
+      --border: #e2d6c5;
+      --green: #1f3b2d;
+      --green-dark: #15271e;
+      --terra: #c8643b;
+      --wa: #1fa855;
+      --danger: #d9383a;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--ink); line-height: 1.5; padding-bottom: 5rem; }
+    
+    /* Top Bar */
+    .topbar { background: var(--green); color: #fff; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; box-shadow: 0 4px 15px rgba(0,0,0,.1); }
+    .brand { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; }
+    .brand-badge { background: var(--terra); padding: .2rem .5rem; border-radius: 6px; font-size: .75rem; }
+    .view-site { color: #fff; text-decoration: none; font-size: .85rem; font-weight: 600; background: rgba(255,255,255,.15); padding: .45rem .85rem; border-radius: 999px; }
+    
+    /* Nav Tabs */
+    .tabs { display: flex; background: var(--paper); border-bottom: 1.5px solid var(--border); overflow-x: auto; padding: 0 1rem; position: sticky; top: 58px; z-index: 30; }
+    .tab-btn { flex: 1; min-width: 110px; padding: .85rem .5rem; background: none; border: 0; border-bottom: 3px solid transparent; font-weight: 600; font-size: .9rem; color: var(--muted); cursor: pointer; text-align: center; }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+    
+    /* Container */
+    .container { max-width: 760px; margin: 1.25rem auto; padding: 0 1rem; }
+    
+    /* Cards */
+    .panel { background: var(--paper); border-radius: var(--radius); padding: 1.25rem; border: 1.5px solid var(--border); margin-bottom: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.03); }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: .5rem; }
+    .panel-title { font-size: 1.15rem; font-weight: 700; color: var(--green); }
+    
+    /* Form controls */
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-size: .85rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; }
+    input[type="text"], input[type="number"], input[type="password"], textarea, select {
+      width: 100%; padding: .75rem; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; font-size: .95rem; color: var(--ink); outline: none; transition: border-color .2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--green); }
+    .help-text { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
+    
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; padding: .75rem 1.25rem; border-radius: 999px; font-weight: 600; font-size: .95rem; border: 0; cursor: pointer; text-decoration: none; transition: transform .1s, opacity .2s; }
+    .btn:active { transform: scale(.98); }
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-secondary { background: var(--bg); border: 1.5px solid var(--border); color: var(--ink); }
+    .btn-terra { background: var(--terra); color: #fff; }
+    .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fca5a5; }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: .4rem .75rem; font-size: .8rem; }
+    
+    /* Product list items */
+    .prod-item { display: flex; gap: .9rem; padding: .9rem; background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: .85rem; align-items: center; }
+    .prod-thumb { width: 68px; height: 85px; border-radius: 8px; object-fit: cover; background: var(--border); flex-shrink: 0; }
+    .prod-info { flex: 1; min-width: 0; }
+    .prod-info h4 { font-size: .95rem; font-weight: 600; margin-bottom: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prod-tag { display: inline-block; font-size: .7rem; font-weight: 600; color: var(--terra); background: rgba(200,100,59,.1); padding: .15rem .45rem; border-radius: 4px; margin-bottom: .2rem; }
+    .prod-price { font-weight: 700; color: var(--green); font-size: .95rem; }
+    .prod-actions { display: flex; flex-direction: column; gap: .35rem; }
+    
+    /* Image preview & upload */
+    .upload-box { border: 2px dashed var(--border); border-radius: 12px; padding: 1.2rem; text-align: center; cursor: pointer; background: #faf8f5; position: relative; }
+    .upload-box:hover { border-color: var(--green); }
+    .upload-preview { max-width: 140px; max-height: 180px; border-radius: 8px; object-fit: cover; margin: 0 auto .6rem; display: block; border: 1.5px solid var(--border); }
+    
+    /* Modal Dialog */
+    dialog { border: 0; border-radius: 20px; padding: 0; width: min(540px, 94vw); max-height: 90vh; background: var(--paper); margin: auto; box-shadow: 0 20px 40px rgba(0,0,0,.25); }
+    dialog::backdrop { background: rgba(0,0,0,.5); backdrop-filter: blur(4px); }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1.5px solid var(--border); }
+    .modal-head h3 { font-size: 1.15rem; font-weight: 700; color: var(--green); }
+    .modal-close { background: none; border: 0; font-size: 1.4rem; cursor: pointer; color: var(--muted); }
+    .modal-content { padding: 1.25rem; overflow-y: auto; max-height: calc(90vh - 130px); }
+    .modal-actions { padding: .9rem 1.25rem; border-top: 1.5px solid var(--border); display: flex; gap: .6rem; justify-content: flex-end; }
+    
+    /* Alerts */
+    .alert { padding: .85rem 1rem; border-radius: 10px; margin-bottom: 1rem; font-size: .88rem; font-weight: 500; }
+    .alert-success { background: #dcfce7; color: #166534; border: 1.5px solid #86efac; }
+    .alert-info { background: #e0f2fe; color: #075985; border: 1.5px solid #7dd3fc; }
+    
+    /* PIN screen overlay */
+    .pin-lock { position: fixed; inset: 0; background: var(--green-dark); color: #fff; z-index: 100; display: grid; place-items: center; padding: 1.5rem; text-align: center; }
+    .pin-card { background: var(--paper); color: var(--ink); border-radius: 24px; padding: 2rem 1.5rem; width: min(340px, 100%); box-shadow: 0 15px 35px rgba(0,0,0,.3); }
+    .pin-input { font-size: 1.8rem; letter-spacing: .4em; text-align: center; width: 100%; padding: .6rem; border: 2px solid var(--border); border-radius: 12px; margin: 1.2rem 0; outline: none; }
+    .pin-input:focus { border-color: var(--green); }
+    
+    .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- KUNCI PIN -->
+  <div id="pinLock" class="pin-lock" style="display: none;">
+    <div class="pin-card">
+      <h3 style="color: var(--green); margin-bottom: .4rem;">Kunci Admin</h3>
+      <p style="font-size: .85rem; color: var(--muted);">Masukkan PIN untuk mengelola katalog</p>
+      <input type="password" id="pinInput" class="pin-input" maxlength="6" placeholder="••••" autofocus inputmode="numeric">
+      <button class="btn btn-primary btn-block" id="btnUnlock">Buka Admin</button>
+      <p style="font-size: .75rem; color: var(--muted); margin-top: .8rem;">Hubungi admin jika lupa PIN</p>
+    </div>
+  </div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      🛍️ <span id="brandName">Sahla Store</span>
+      <span class="brand-badge">Admin</span>
+    </div>
+    <a href="index.html" class="view-site" target="_blank">👁️ Buka Web</a>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="tab-produk">🛍️ Produk (<span id="countBadge">0</span>)</button>
+    <button class="tab-btn" data-tab="tab-toko">🏪 Banner & Toko</button>
+    <button class="tab-btn" data-tab="tab-publish">🚀 Publikasi ke Web</button>
+  </nav>
+
+  <main class="container">
+    
+    <!-- NOTIFIKASI STATUS -->
+    <div id="statusAlert" style="display: none;"></div>
+
+    <!-- TAB 1: KELOLA PRODUK -->
+    <section id="tab-produk" class="tab-content">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Daftar Produk</h2>
+            <p class="help-text">Tambah atau edit barang yang dijual</p>
+          </div>
+          <button class="btn btn-primary" id="btnTambahProduk">
+            ➕ Tambah Produk Baru
+          </button>
+        </div>
+        
+        <div class="form-group">
+          <input type="text" id="adminSearch" placeholder="🔍 Cari nama atau kategori barang...">
+        </div>
+
+        <div id="productList">
+          <!-- Di-generate via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: INFORMASI TOKO & BANNER -->
+    <section id="tab-toko" class="tab-content" style="display: none;">
+      <div class="panel">
+        <h2 class="panel-title" style="margin-bottom: 1rem;">Pengaturan Toko & Banner</h2>
+        
+        <div class="form-group">
+          <label>Nama Toko</label>
+          <input type="text" id="setStoreName" placeholder="Contoh: Sahla Store">
+        </div>
+
+        <div class="form-group">
+          <label>Nomor WhatsApp Penjual</label>
+          <input type="text" id="setWaNumber" placeholder="Contoh: 6281234567890 (awali 62)">
+          <p class="help-text">Pesanan pembeli dari tombol WA akan otomatis masuk ke nomor ini.</p>
+        </div>
+
+        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
+
+        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .8rem;">Banner Promo Utama</h3>
+
+        <div class="form-group">
+          <label>Foto Background Banner</label>
+          <div class="upload-box" id="bannerUploadBox">
+            <img id="bannerPreview" class="upload-preview" src="img/banner.jpg" alt="Preview Banner" style="max-width: 100%; height: 120px;">
+            <p style="font-size: .8rem; font-weight: 600; color: var(--green);">📸 Ganti Foto Background Banner</p>
+            <input type="file" id="bannerFileInput" accept="image/*" style="display: none;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Judul Kecil Promo (Eyebrow)</label>
+          <input type="text" id="setBannerEyebrow" placeholder="Contoh: Promo Jumat Berkah">
+        </div>
+
+        <div class="form-group">
+          <label>Teks Promo Besar</label>
+          <input type="text" id="setBannerTitle" placeholder="Contoh: Beli 2 daster, gratis 1 celamis.">
+        </div>
+
+        <div class="form-group">
+          <label>Pesan Otomatis WhatsApp Promo</label>
+          <input type="text" id="setBannerMsg" placeholder="Pesan otomatis ketika pembeli klik Ambil Promo">
+        </div>
+
+        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
+
+        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .8rem;">Teks Header Utama (Hero)</h3>
+
+        <div class="form-group">
+          <label>Subjudul Atas</label>
+          <input type="text" id="setHeroEyebrow" placeholder="Contoh: Ready stock • Update tiap hari">
+        </div>
+
+        <div class="form-group">
+          <label>Judul Utama</label>
+          <input type="text" id="setHeroTitle" placeholder="Contoh: Cantik, nyaman, harga bersahabat.">
+        </div>
+
+        <div class="form-group">
+          <label>Deskripsi Singkat</label>
+          <textarea id="setHeroLead" rows="2" placeholder="Deskripsi di bawah judul utama..."></textarea>
+        </div>
+
+        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
+
+        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .8rem;">Keamanan PIN Admin</h3>
+
+        <div class="form-group">
+          <label>Ganti PIN Masuk Admin (4-6 angka)</label>
+          <input type="text" id="setAdminPin" maxlength="6" inputmode="numeric" placeholder="1234">
+          <p class="help-text">Gunakan kombinasi angka yang mudah diingat bini. Default: 1234.</p>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="btnSimpanToko">
+          💾 Simpan Pengaturan Toko
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 3: PUBLIKASI KE GITHUB & VERCEL -->
+    <section id="tab-publish" class="tab-content" style="display: none;">
+      <div class="panel">
+        <h2 class="panel-title" style="margin-bottom: .4rem;">Publikasikan ke Web Live</h2>
+        <p class="help-text" style="margin-bottom: 1.2rem;">Kirim perubahan langsung ke GitHub agar Vercel otomatis deploy web terbaru.</p>
+
+        <div class="alert alert-info">
+          💡 <b>Cukup Isi Sekali:</b> Token tersimpan aman di browser HP ini. Setiap kali klik "Publikasikan Sekarang", web live akan otomatis ter-update dalam ~30 detik.
+        </div>
+
+        <div class="form-group">
+          <label>GitHub Personal Access Token (PAT)</label>
+          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+          <p class="help-text">Token dengan hak akses <code>repo</code>.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Nama Repository GitHub</label>
+          <input type="text" id="ghRepo" placeholder="username/nama-repo (contoh: bie71/sahla-store)">
+        </div>
+
+        <div class="form-group">
+          <label>Branch</label>
+          <input type="text" id="ghBranch" value="main" placeholder="main">
+        </div>
+
+        <button class="btn btn-terra btn-block" id="btnPublishGitHub" style="padding: .9rem; font-size: 1rem;">
+          <span id="publishBtnText">🚀 Publikasikan Sekarang ke Web</span>
+        </button>
+
+        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.5rem 0;">
+
+        <h3 style="font-size: .95rem; color: var(--muted); margin-bottom: .6rem;">Opsi Cadangan (Manual)</h3>
+        <div style="display: flex; gap: .6rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" id="btnDownloadJs">📥 Unduh file products.js</button>
+          <button class="btn btn-secondary btn-sm" id="btnCopyJs">📋 Salin kode products.js</button>
+          <button class="btn btn-secondary btn-sm" id="btnResetPreview">🔄 Reset Preview</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL EDIT / TAMBAH PRODUK -->
+  <dialog id="modalProduk">
+    <div class="modal-head">
+      <h3 id="modalProdukTitle">Tambah Produk Baru</h3>
+      <button class="modal-close" id="btnCloseModal">×</button>
+    </div>
+    <form id="formProduk" class="modal-content">
+      <input type="hidden" id="prodId">
+
+      <!-- Upload Foto -->
+      <div class="form-group">
+        <label>Foto Produk</label>
+        <div class="upload-box" id="prodUploadBox">
+          <img id="prodPreview" class="upload-preview" src="img/1.jpg" alt="Preview">
+          <p style="font-size: .85rem; font-weight: 600; color: var(--green); margin-bottom: .2rem;">
+            📸 Ambil Foto / Pilih dari Galeri
+          </p>
+          <p style="font-size: .75rem; color: var(--muted);">Otomatis dikompres biar ringan</p>
+          <input type="file" id="prodFileInput" accept="image/*" style="display: none;">
+        </div>
+        <input type="text" id="prodImgUrl" placeholder="Atau ketik path/URL foto (contoh: img/1.jpg)" style="margin-top: .4rem; font-size: .8rem;">
+      </div>
+
+      <div class="form-group">
+        <label>Nama Produk *</label>
+        <input type="text" id="prodName" required placeholder="Contoh: Gamis Syari Ceruty Premium">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: .75rem;">
+        <div class="form-group">
+          <label>Kategori *</label>
+          <select id="prodCatSelect">
+            <option value="Gamis">Gamis</option>
+            <option value="Daster">Daster</option>
+            <option value="Baju Dewasa">Baju Dewasa</option>
+            <option value="Baju Anak">Baju Anak</option>
+            <option value="Celamis">Celamis</option>
+            <option value="Tyso">Tyso</option>
+            <option value="Elektronik">Elektronik</option>
+            <option value="__NEW__">+ Kategori Baru...</option>
+          </select>
+          <input type="text" id="prodCatCustom" placeholder="Ketik kategori baru" style="display: none; margin-top: .4rem;">
+        </div>
+        <div class="form-group">
+          <label>Label Promo (Opsional)</label>
+          <input type="text" id="prodBadge" placeholder="Ready / Promo / Hot / Best Seller">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: .75rem;">
+        <div class="form-group">
+          <label>Harga Jual (Rp) *</label>
+          <input type="number" id="prodPrice" required placeholder="85000">
+        </div>
+        <div class="form-group">
+          <label>Harga Coret (Rp)</label>
+          <input type="number" id="prodOldPrice" placeholder="100000 (jika ada)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Pilihan Ukuran (Pisahkan dengan koma)</label>
+        <input type="text" id="prodSizes" placeholder="Contoh: S, M, L, XL atau All Size">
+      </div>
+
+      <div class="form-group">
+        <label>Deskripsi Singkat</label>
+        <textarea id="prodDesc" rows="3" placeholder="Bahan adem, jatuh, jahitan rapi, busui friendly..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnBatalProduk">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan Produk</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Script data bawaan -->
+  <script src="products.js"></script>
+
+  <!-- Admin Logic -->
+  <script>
+  (() => {
+    // STATE MANAGEMENT
+    const STORAGE_KEY = "sahla_catalog_data";
+    let state = {
+      settings: typeof STORE_SETTINGS !== "undefined" ? { ...STORE_SETTINGS } : {},
+      products: typeof PRODUCTS !== "undefined" ? [ ...PRODUCTS ] : []
+    };
+
+    // Baca dari localStorage jika pernah disimpan
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.settings) state.settings = parsed.settings;
+        if (parsed.products && parsed.products.length) state.products = parsed.products;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // PIN SECURITY (Dinamis dari config/localStorage)
+    const PIN_KEY = "sahla_admin_auth";
+    const pinLock = document.getElementById("pinLock");
+    const pinInput = document.getElementById("pinInput");
+    const btnUnlock = document.getElementById("btnUnlock");
+
+    if (sessionStorage.getItem(PIN_KEY) !== "valid") {
+      pinLock.style.display = "grid";
+    }
+
+    function getAdminPin() {
+      if (state.settings && state.settings.adminPin) return String(state.settings.adminPin);
+      if (typeof STORE_SETTINGS !== "undefined" && STORE_SETTINGS.adminPin) return String(STORE_SETTINGS.adminPin);
+      return "1234";
+    }
+
+    function checkPin() {
+      const activePin = getAdminPin();
+      if (pinInput.value === activePin) {
+        sessionStorage.setItem(PIN_KEY, "valid");
+        pinLock.style.display = "none";
+      } else {
+        alert("PIN salah! Silakan coba lagi.");
+        pinInput.value = "";
+      }
+    }
+    btnUnlock.onclick = checkPin;
+    pinInput.onkeydown = e => { if (e.key === "Enter") checkPin(); };
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      document.getElementById("brandName").textContent = state.settings.storeName || "Sahla Store";
+      document.getElementById("countBadge").textContent = state.products.length;
+    }
+
+    // TABS SWITCHING
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
+    tabBtns.forEach(btn => {
+      btn.onclick = () => {
+        tabBtns.forEach(b => b.classList.remove("active"));
+        tabContents.forEach(c => c.style.display = "none");
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).style.display = "block";
+      };
+    });
+
+    // RENDER PRODUK
+    const productList = document.getElementById("productList");
+    const adminSearch = document.getElementById("adminSearch");
+
+    function renderProducts() {
+      const q = adminSearch.value.toLowerCase();
+      const filtered = state.products.filter(p => p.name.toLowerCase().includes(q) || (p.cat && p.cat.toLowerCase().includes(q)));
+      
+      document.getElementById("countBadge").textContent = state.products.length;
+
+      if (filtered.length === 0) {
+        productList.innerHTML = `<p style="text-align: center; color: var(--muted); padding: 2rem 0;">Tidak ada produk ditemukan.</p>`;
+        return;
+      }
+
+      productList.innerHTML = filtered.map(p => `
+        <div class="prod-item">
+          <img class="prod-thumb" src="${p.img || 'img/1.jpg'}" alt="${p.name}" onerror="this.src='favicon.svg'">
+          <div class="prod-info">
+            <span class="prod-tag">${p.cat || 'Umum'}</span>
+            <h4>${p.name}</h4>
+            <div class="prod-price">
+              Rp ${(p.price || 0).toLocaleString("id-ID")}
+              ${p.old ? `<s style="font-size: .8rem; color: var(--muted); margin-left: .3rem;">Rp ${p.old.toLocaleString("id-ID")}</s>` : ""}
+            </div>
+            ${p.sizes ? `<div style="font-size: .75rem; color: var(--muted);">Size: ${p.sizes.join(", ")}</div>` : ""}
+          </div>
+          <div class="prod-actions">
+            <button class="btn btn-secondary btn-sm" onclick="window.editProduk(${p.id})">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="window.hapusProduk(${p.id})">🗑️</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    adminSearch.oninput = renderProducts;
+
+    // MODAL ADD/EDIT PRODUK
+    const modalProduk = document.getElementById("modalProduk");
+    const formProduk = document.getElementById("formProduk");
+    const btnTambahProduk = document.getElementById("btnTambahProduk");
+    const btnCloseModal = document.getElementById("btnCloseModal");
+    const btnBatalProduk = document.getElementById("btnBatalProduk");
+    const prodCatSelect = document.getElementById("prodCatSelect");
+    const prodCatCustom = document.getElementById("prodCatCustom");
+    const prodUploadBox = document.getElementById("prodUploadBox");
+    const prodFileInput = document.getElementById("prodFileInput");
+    const prodPreview = document.getElementById("prodPreview");
+    const prodImgUrl = document.getElementById("prodImgUrl");
+
+    prodCatSelect.onchange = () => {
+      prodCatCustom.style.display = prodCatSelect.value === "__NEW__" ? "block" : "none";
+    };
+
+    prodUploadBox.onclick = () => prodFileInput.click();
+    prodFileInput.onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      compressImage(file, 640, 800, 0.82, (base64) => {
+        prodPreview.src = base64;
+        prodImgUrl.value = base64;
+      });
+    };
+    prodImgUrl.oninput = () => {
+      if (prodImgUrl.value) prodPreview.src = prodImgUrl.value;
+    };
+
+    btnTambahProduk.onclick = () => {
+      document.getElementById("modalProdukTitle").textContent = "Tambah Produk Baru";
+      formProduk.reset();
+      document.getElementById("prodId").value = "";
+      prodPreview.src = "img/1.jpg";
+      prodCatCustom.style.display = "none";
+      modalProduk.showModal();
+    };
+
+    btnCloseModal.onclick = () => modalProduk.close();
+    btnBatalProduk.onclick = () => modalProduk.close();
+
+    window.editProduk = id => {
+      const p = state.products.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById("modalProdukTitle").textContent = "Edit Produk";
+      document.getElementById("prodId").value = p.id;
+      document.getElementById("prodName").value = p.name;
+      document.getElementById("prodPrice").value = p.price;
+      document.getElementById("prodOldPrice").value = p.old || "";
+      document.getElementById("prodBadge").value = p.badge || "";
+      document.getElementById("prodSizes").value = p.sizes ? p.sizes.join(", ") : "";
+      document.getElementById("prodDesc").value = p.desc || "";
+      document.getElementById("prodImgUrl").value = p.img || "";
+      prodPreview.src = p.img || "img/1.jpg";
+
+      // Kategori
+      const known = ["Gamis", "Daster", "Baju Dewasa", "Baju Anak", "Celamis", "Tyso", "Elektronik"];
+      if (known.includes(p.cat)) {
+        prodCatSelect.value = p.cat;
+        prodCatCustom.style.display = "none";
+      } else {
+        prodCatSelect.value = "__NEW__";
+        prodCatCustom.style.display = "block";
+        prodCatCustom.value = p.cat || "";
+      }
+
+      modalProduk.showModal();
+    };
+
+    window.hapusProduk = id => {
+      if (confirm("Yakin ingin menghapus produk ini dari katalog?")) {
+        state.products = state.products.filter(p => p.id !== id);
+        saveState();
+        renderProducts();
+        showAlert("Produk berhasil dihapus.", "success");
+      }
+    };
+
+    formProduk.onsubmit = e => {
+      e.preventDefault();
+      const id = document.getElementById("prodId").value;
+      const cat = prodCatSelect.value === "__NEW__" ? prodCatCustom.value.trim() : prodCatSelect.value;
+      const sizesStr = document.getElementById("prodSizes").value.trim();
+      const sizes = sizesStr ? sizesStr.split(",").map(s => s.trim()).filter(Boolean) : undefined;
+
+      const prodData = {
+        id: id ? parseInt(id) : Date.now(),
+        cat: cat || "Umum",
+        name: document.getElementById("prodName").value.trim(),
+        price: parseInt(document.getElementById("prodPrice").value) || 0,
+        img: prodImgUrl.value.trim() || prodPreview.src,
+        badge: document.getElementById("prodBadge").value.trim() || undefined,
+        sizes: sizes,
+        desc: document.getElementById("prodDesc").value.trim()
+      };
+      const oldPrice = parseInt(document.getElementById("prodOldPrice").value);
+      if (oldPrice) prodData.old = oldPrice;
+
+      if (id) {
+        const idx = state.products.findIndex(p => p.id === parseInt(id));
+        if (idx !== -1) state.products[idx] = prodData;
+      } else {
+        state.products.unshift(prodData);
+      }
+
+      saveState();
+      renderProducts();
+      modalProduk.close();
+      showAlert("✅ Produk berhasil disimpan!", "success");
+    };
+
+    // PENGATURAN TOKO & BANNER
+    const setStoreName = document.getElementById("setStoreName");
+    const setWaNumber = document.getElementById("setWaNumber");
+    const setBannerEyebrow = document.getElementById("setBannerEyebrow");
+    const setBannerTitle = document.getElementById("setBannerTitle");
+    const setBannerMsg = document.getElementById("setBannerMsg");
+    const bannerPreview = document.getElementById("bannerPreview");
+    const bannerFileInput = document.getElementById("bannerFileInput");
+    const bannerUploadBox = document.getElementById("bannerUploadBox");
+    const setHeroEyebrow = document.getElementById("setHeroEyebrow");
+    const setHeroTitle = document.getElementById("setHeroTitle");
+    const setHeroLead = document.getElementById("setHeroLead");
+    const setAdminPin = document.getElementById("setAdminPin");
+    const btnSimpanToko = document.getElementById("btnSimpanToko");
+
+    function loadSettingsToForm() {
+      const s = state.settings;
+      setStoreName.value = s.storeName || "Sahla Store";
+      setWaNumber.value = s.waNumber || "6281234567890";
+      setBannerEyebrow.value = s.bannerEyebrow || "";
+      setBannerTitle.value = s.bannerTitle ? s.bannerTitle.replace(/<br>/g, " ") : "";
+      setBannerMsg.value = s.bannerMsg || "";
+      bannerPreview.src = s.bannerBg || "img/banner.jpg";
+      setHeroEyebrow.value = s.heroEyebrow || "";
+      setHeroTitle.value = s.heroTitle ? s.heroTitle.replace(/<br>/g, " ").replace(/<em>|<\/em>/g, "") : "";
+      setHeroLead.value = s.heroLead || "";
+      setAdminPin.value = s.adminPin || "1234";
+    }
+
+    bannerUploadBox.onclick = () => bannerFileInput.click();
+    bannerFileInput.onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      compressImage(file, 1200, 800, 0.8, (base64) => {
+        bannerPreview.src = base64;
+        state.settings.bannerBg = base64;
+      });
+    };
+
+    btnSimpanToko.onclick = () => {
+      state.settings.storeName = setStoreName.value.trim() || "Sahla Store";
+      state.settings.waNumber = setWaNumber.value.trim() || "6281234567890";
+      state.settings.bannerEyebrow = setBannerEyebrow.value.trim();
+      state.settings.bannerTitle = setBannerTitle.value.trim();
+      state.settings.bannerMsg = setBannerMsg.value.trim();
+      state.settings.heroEyebrow = setHeroEyebrow.value.trim();
+      state.settings.heroTitle = setHeroTitle.value.trim();
+      state.settings.heroLead = setHeroLead.value.trim();
+
+      const newPin = setAdminPin.value.trim();
+      if (newPin && newPin.length >= 4) {
+        state.settings.adminPin = newPin;
+      }
+
+      saveState();
+      showAlert("✅ Pengaturan toko & banner berhasil disimpan!", "success");
+    };
+
+    // GENERATE KODE JAVASCRIPT products.js
+    function generateJsCode() {
+      return `// KONFIGURASI TOKO & BANNER\nconst STORE_SETTINGS = ${JSON.stringify(state.settings, null, 2)};\n\nconst WA_NUMBER = STORE_SETTINGS.waNumber;\n\n// DAFTAR PRODUK KATALOG\nconst PRODUCTS = ${JSON.stringify(state.products, null, 2)};\n`;
+    }
+
+    // PUBLISH KE GITHUB API
+    const ghToken = document.getElementById("ghToken");
+    const ghRepo = document.getElementById("ghRepo");
+    const ghBranch = document.getElementById("ghBranch");
+    const btnPublishGitHub = document.getElementById("btnPublishGitHub");
+    const publishBtnText = document.getElementById("publishBtnText");
+
+    // Load credential cache
+    ghToken.value = localStorage.getItem("sahla_gh_token") || "";
+    ghRepo.value = localStorage.getItem("sahla_gh_repo") || "bie71/sahla-store";
+    ghBranch.value = localStorage.getItem("sahla_gh_branch") || "main";
+
+    btnPublishGitHub.onclick = async () => {
+      const token = ghToken.value.trim();
+      const repo = ghRepo.value.trim();
+      const branch = ghBranch.value.trim() || "main";
+
+      if (!token) {
+        alert("Masukkan GitHub Personal Access Token terlebih dahulu.");
+        ghToken.focus();
+        return;
+      }
+      if (!repo || !repo.includes("/")) {
+        alert("Format repo harus username/nama-repo (contoh: bie71/sahla-store)");
+        ghRepo.focus();
+        return;
+      }
+
+      // Simpan preferensi
+      localStorage.setItem("sahla_gh_token", token);
+      localStorage.setItem("sahla_gh_repo", repo);
+      localStorage.setItem("sahla_gh_branch", branch);
+
+      publishBtnText.innerHTML = `<span class="loading-spinner"></span> Mengirim ke GitHub...`;
+      btnPublishGitHub.disabled = true;
+
+      try {
+        const filePath = "products.js";
+        const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}?ref=${branch}`;
+
+        // 1. Ambil SHA file yang sekarang jika ada
+        let sha = null;
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          sha = fileData.sha;
+        } else if (getRes.status !== 404) {
+          const errData = await getRes.json();
+          throw new Error(errData.message || "Gagal menghubungi repository GitHub.");
+        }
+
+        // 2. Siapkan konten baru UTF-8 base64
+        const contentStr = generateJsCode();
+        const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
+
+        // 3. Commit PUT ke GitHub
+        const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: `Update katalog via Admin UI [${new Date().toLocaleString("id-ID")}]`,
+            content: base64Content,
+            branch: branch,
+            sha: sha || undefined
+          })
+        });
+
+        if (!putRes.ok) {
+          const errData = await putRes.json();
+          throw new Error(errData.message || "Gagal melakukan commit ke GitHub.");
+        }
+
+        showAlert("🚀 Berhasil dipublikasikan ke GitHub! Vercel akan otomatis mengupdate web dalam ~30 detik.", "success");
+      } catch (err) {
+        console.error(err);
+        showAlert(`❌ Gagal: ${err.message}`, "danger");
+      } finally {
+        publishBtnText.textContent = "🚀 Publikasikan Sekarang ke Web";
+        btnPublishGitHub.disabled = false;
+      }
+    };
+
+    // MANUAL BACKUP BUTTONS
+    document.getElementById("btnCopyJs").onclick = () => {
+      const code = generateJsCode();
+      navigator.clipboard.writeText(code).then(() => {
+        alert("Kode products.js berhasil disalin ke clipboard!");
+      });
+    };
+
+    document.getElementById("btnDownloadJs").onclick = () => {
+      const code = generateJsCode();
+      const blob = new Blob([code], { type: "text/javascript" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "products.js";
+      a.click();
+    };
+
+    document.getElementById("btnResetPreview").onclick = () => {
+      if (confirm("Reset data lokal ke data awal file products.js?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    };
+
+    // UTILITY: NOTIFIKASI ALERT
+    function showAlert(msg, type = "info") {
+      const el = document.getElementById("statusAlert");
+      el.className = `alert alert-${type}`;
+      el.innerHTML = msg;
+      el.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => { el.style.display = "none"; }, 8000);
+    }
+
+    // UTILITY: IMAGE COMPRESSION VIA CANVAS
+    function compressImage(file, maxW, maxH, quality, callback) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > maxW || h > maxH) {
+            const ratio = Math.min(maxW / w, maxH / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL("image/jpeg", quality);
+          callback(dataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // INIT
+    saveState();
+    loadSettingsToForm();
+    renderProducts();
+
+  })();
+  </script>
+</body>
+</html>
