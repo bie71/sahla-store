@@ -1,15 +1,20 @@
 // KONFIGURASI TOKO & BANNER
 const STORE_SETTINGS = {
   "storeName": "Sahla Store",
-  "waNumber": "6281234567890",
+  "waNumber": "6281234567891",
   "heroEyebrow": "Ready stock • Update tiap hari",
   "heroTitle": "Cantik, nyaman, harga bersahabat.",
   "heroLead": "Gamis, daster, baju anak sampai HP & laptop — semua yang lagi ready ada di sini. Tinggal pilih, klik, chat.",
+  "bannerEyebrow": "Promo Jumat Berkah",
+  "bannerTitle": "Beli 2 daster, gratis 1 celamis.",
+  "bannerMsg": "Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)",
+  "bannerBg": "img/banner.jpg",
+  "adminPin": "123456",
   "heroTag": "Diskon s/d 30%",
   "heroCards": [
     {
       "img": "img/h1.jpg",
-      "caption": "Gamis Syari"
+      "caption": "Gamis Syari New"
     },
     {
       "img": "img/h2.jpg",
@@ -20,15 +25,10 @@ const STORE_SETTINGS = {
       "caption": "HP Second"
     }
   ],
-  "bannerEyebrow": "Promo Jumat Berkah",
-  "bannerTitle": "Beli 2 daster, gratis 1 celamis.",
-  "bannerMsg": "Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)",
-  "bannerBg": "img/banner.jpg",
   "carouselEnabled": true,
   "carouselEyebrow": "Unggulan",
   "carouselTitle": "Paling banyak ditanya",
-  "carouselProductIds": [],
-  "adminPin": "123456"
+  "carouselProductIds": []
 };
 
 const WA_NUMBER = STORE_SETTINGS.waNumber;
