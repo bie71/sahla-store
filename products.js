@@ -24,6 +24,10 @@ const STORE_SETTINGS = {
   "bannerTitle": "Beli 2 daster, gratis 1 celamis.",
   "bannerMsg": "Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)",
   "bannerBg": "img/banner.jpg",
+  "carouselEnabled": true,
+  "carouselEyebrow": "Unggulan",
+  "carouselTitle": "Paling banyak ditanya",
+  "carouselProductIds": [],
   "adminPin": "123456"
 };
 

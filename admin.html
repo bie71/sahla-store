@@ -287,6 +287,40 @@
 
         <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
 
+        <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .4rem;">3D Carousel Produk (Unggulan)</h3>
+        <p class="help-text" style="margin-bottom: .85rem;">Pengaturan carousel produk 3D yang berputar di bawah banner promo.</p>
+
+        <!-- Toggle Tampilkan Carousel -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #faf8f5; border: 1.5px solid var(--border); border-radius: 12px; padding: .85rem 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="margin-bottom: .2rem; font-weight: 700; cursor: pointer;" for="setCarouselEnabled">Tampilkan Section Carousel di Web</label>
+            <p class="help-text" style="margin: 0;">Aktifkan atau sembunyikan section carousel dan menu navigasi "Unggulan".</p>
+          </div>
+          <input type="checkbox" id="setCarouselEnabled" style="width: 22px; height: 22px; accent-color: var(--green); cursor: pointer;" checked>
+        </div>
+
+        <div id="carouselSettingsBox">
+          <div class="form-group">
+            <label>Subjudul (Eyebrow)</label>
+            <input type="text" id="setCarouselEyebrow" placeholder="Contoh: Unggulan">
+          </div>
+
+          <div class="form-group">
+            <label>Judul Section</label>
+            <input type="text" id="setCarouselTitle" placeholder="Contoh: Paling banyak ditanya">
+          </div>
+
+          <div class="form-group">
+            <label>Pilih Produk untuk Carousel (Maks. 8 disarankan)</label>
+            <p class="help-text" style="margin-bottom: .6rem;">Centang produk yang ingin dimunculkan di carousel. Jika tidak ada yang dicentang, sistem otomatis menampilkan 8 produk teratas.</p>
+            <div id="carouselProductList" style="max-height: 240px; overflow-y: auto; border: 1.5px solid var(--border); border-radius: 10px; padding: .5rem; background: #fff; display: flex; flex-direction: column; gap: .4rem;">
+              <!-- Render via JS -->
+            </div>
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1.5px solid var(--border); margin: 1.25rem 0;">
+
         <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .8rem;">Keamanan PIN Admin</h3>
 
         <div class="form-group">
@@ -422,7 +456,7 @@
   </dialog>
 
   <!-- Script data bawaan -->
-  <script src="products.js?v=3"></script>
+  <script src="products.js?v=4"></script>
 
   <!-- Admin Logic -->
   <script>
@@ -671,6 +705,37 @@
     const btnUploadCard3 = document.getElementById("btnUploadCard3");
     const fileCard3 = document.getElementById("fileCard3");
 
+    const setCarouselEnabled = document.getElementById("setCarouselEnabled");
+    const carouselSettingsBox = document.getElementById("carouselSettingsBox");
+    const setCarouselEyebrow = document.getElementById("setCarouselEyebrow");
+    const setCarouselTitle = document.getElementById("setCarouselTitle");
+    const carouselProductList = document.getElementById("carouselProductList");
+
+    if (setCarouselEnabled && carouselSettingsBox) {
+      setCarouselEnabled.onchange = () => {
+        carouselSettingsBox.style.opacity = setCarouselEnabled.checked ? "1" : "0.5";
+        carouselSettingsBox.style.pointerEvents = setCarouselEnabled.checked ? "auto" : "none";
+      };
+    }
+
+    function renderCarouselProductList(selectedIds) {
+      if (!carouselProductList) return;
+      const idsSet = new Set(selectedIds || []);
+      if (!state.products.length) {
+        carouselProductList.innerHTML = `<p class="help-text" style="padding: .5rem; margin: 0;">Belum ada produk di katalog.</p>`;
+        return;
+      }
+      carouselProductList.innerHTML = state.products.map(p => `
+        <label style="display: flex; align-items: center; gap: .6rem; padding: .4rem .6rem; border-radius: 8px; cursor: pointer; background: #faf8f5;">
+          <input type="checkbox" class="carousel-item-chk" value="${p.id}" ${idsSet.has(p.id) ? "checked" : ""} style="width: 18px; height: 18px; accent-color: var(--green);">
+          <img src="${p.img}" style="width: 32px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
+          <span style="font-size: .88rem; flex: 1;">
+            <b>${p.name}</b> <small style="color: var(--muted); font-size: .78rem;">(${p.cat} • Rp ${p.price.toLocaleString("id-ID")})</small>
+          </span>
+        </label>
+      `).join("");
+    }
+
     const setAdminPin = document.getElementById("setAdminPin");
     const btnSimpanToko = document.getElementById("btnSimpanToko");
 
@@ -728,6 +793,15 @@
       setCard3Caption.value = cards[2].caption || "";
 
       setAdminPin.value = s.adminPin || "1234";
+
+      setCarouselEnabled.checked = s.carouselEnabled !== false;
+      if (carouselSettingsBox) {
+        carouselSettingsBox.style.opacity = setCarouselEnabled.checked ? "1" : "0.5";
+        carouselSettingsBox.style.pointerEvents = setCarouselEnabled.checked ? "auto" : "none";
+      }
+      setCarouselEyebrow.value = s.carouselEyebrow || "Unggulan";
+      setCarouselTitle.value = s.carouselTitle ? s.carouselTitle.replace(/<br>/g, " ") : "Paling banyak ditanya";
+      renderCarouselProductList(s.carouselProductIds);
     }
 
     bannerUploadBox.onclick = () => bannerFileInput.click();
@@ -755,6 +829,12 @@
       state.settings.heroCards[0].caption = setCard1Caption.value.trim() || "Gamis Syari";
       state.settings.heroCards[1].caption = setCard2Caption.value.trim() || "Baju Anak";
       state.settings.heroCards[2].caption = setCard3Caption.value.trim() || "HP Second";
+
+      state.settings.carouselEnabled = setCarouselEnabled.checked;
+      state.settings.carouselEyebrow = setCarouselEyebrow.value.trim() || "Unggulan";
+      state.settings.carouselTitle = setCarouselTitle.value.trim() || "Paling banyak ditanya";
+      const checkedBoxes = Array.from(document.querySelectorAll(".carousel-item-chk:checked"));
+      state.settings.carouselProductIds = checkedBoxes.map(chk => Number(chk.value));
 
       const newPin = setAdminPin.value.trim();
       if (newPin && newPin.length >= 4) {

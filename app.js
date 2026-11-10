@@ -65,6 +65,26 @@
     bBg.style.backgroundImage = `linear-gradient(rgba(31,59,45,.55), rgba(31,59,45,.75)), url("${settings.bannerBg}")`;
   }
 
+  // 3D Carousel Section
+  const secUnggulan = document.getElementById("unggulan");
+  const navUnggulan = document.querySelector('.nav-links a[href="#unggulan"]');
+  const isCarouselEnabled = settings.carouselEnabled !== false;
+
+  if (secUnggulan) {
+    if (!isCarouselEnabled) {
+      secUnggulan.style.display = "none";
+    } else {
+      secUnggulan.style.display = "";
+      const eye = secUnggulan.querySelector(".eyebrow");
+      const title = secUnggulan.querySelector("h2");
+      if (eye && settings.carouselEyebrow) eye.textContent = settings.carouselEyebrow;
+      if (title && settings.carouselTitle) title.innerHTML = settings.carouselTitle;
+    }
+  }
+  if (navUnggulan) {
+    navUnggulan.style.display = isCarouselEnabled ? "" : "none";
+  }
+
   const UI = {
     nav: document.getElementById("nav"),
     grid: document.getElementById("grid"),
@@ -190,7 +210,15 @@
   // 3D Ring Carousel
   function getRingConfig() {
     const isMobile = window.innerWidth < 640;
-    const items = products.slice(0, 8);
+    let items = [];
+    if (settings.carouselProductIds && Array.isArray(settings.carouselProductIds) && settings.carouselProductIds.length > 0) {
+      items = settings.carouselProductIds
+        .map(id => products.find(p => p.id === id))
+        .filter(Boolean);
+    }
+    if (!items.length) {
+      items = products.slice(0, 8);
+    }
     const count = items.length;
     const r = isMobile ? 195 : 360;
     return { isMobile, items, count, r };
@@ -254,7 +282,8 @@
 
   function rotateRing(dir) {
     if (!UI.ring) return;
-    const count = Math.min(products.length, 8);
+    const { count } = getRingConfig();
+    if (count <= 0) return;
     const step = 360 / count;
     ringAngle += dir * step;
     UI.ring.style.transform = `rotateY(${ringAngle}deg)`;
@@ -264,7 +293,8 @@
   if (UI.ringPrev) UI.ringPrev.onclick = () => rotateRing(1);
 
   window.onRingCardClick = (idx, id) => {
-    const count = Math.min(products.length, 8);
+    const { count } = getRingConfig();
+    if (count <= 0) return;
     const step = 360 / count;
     const baseAngle = idx * step;
     let diff = ((baseAngle + ringAngle) % 360 + 360) % 360;
