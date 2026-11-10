@@ -9,7 +9,7 @@ const STORE_SETTINGS = {
   "bannerTitle": "Beli 2 daster, gratis 1 celamis.",
   "bannerMsg": "Halo kak, mau ikut promo Jumat Berkah (beli 2 daster gratis 1 celamis)",
   "bannerBg": "img/banner.jpg",
-  "adminPin": "123456",
+  "adminPin": "sahla@",
   "heroTag": "Diskon s/d 30%",
   "heroCards": [
     {
@@ -22,7 +22,7 @@ const STORE_SETTINGS = {
     },
     {
       "img": "img/h3.jpg",
-      "caption": "HP Second"
+      "caption": "Laptop Second"
     }
   ],
   "carouselEnabled": true,
