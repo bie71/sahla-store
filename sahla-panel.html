@@ -315,9 +315,9 @@
         <h3 style="font-size: 1rem; color: var(--green); margin-bottom: .8rem;">Keamanan PIN Admin</h3>
 
         <div class="form-group">
-          <label>Ganti PIN Masuk Admin (4-6 angka)</label>
-          <input type="text" id="setAdminPin" maxlength="6" inputmode="numeric" placeholder="1234">
-          <p class="help-text">Gunakan kombinasi angka/karakter yang mudah diingat. Default: sahla@.</p>
+          <label>Ganti PIN Masuk Admin</label>
+          <input type="password" id="setAdminPin" placeholder="Biarkan kosong jika tidak ingin ganti PIN">
+          <p class="help-text">PIN di-hash aman dengan enkripsi SHA-256. Kosongkan jika tidak ingin mengubah PIN saat ini.</p>
         </div>
 
         <button class="btn btn-primary btn-block" id="btnSimpanToko">
@@ -448,7 +448,7 @@
   </dialog>
 
   <!-- Script data bawaan -->
-  <script src="products.js?v=8"></script>
+  <script src="products.js?v=9"></script>
 
   <!-- Admin Logic -->
   <script>
@@ -472,7 +472,7 @@
       }
     }
 
-    // PIN SECURITY (Dinamis dari config/localStorage)
+    // PIN SECURITY (SHA-256 Hash Protection)
     const PIN_KEY = "sahla_admin_auth";
     const pinLock = document.getElementById("pinLock");
     const pinInput = document.getElementById("pinInput");
@@ -482,15 +482,29 @@
       pinLock.style.display = "grid";
     }
 
-    function getAdminPin() {
-      if (state.settings && state.settings.adminPin) return String(state.settings.adminPin);
-      if (typeof STORE_SETTINGS !== "undefined" && STORE_SETTINGS.adminPin) return String(STORE_SETTINGS.adminPin);
-      return "1234";
+    async function sha256(text) {
+      const msgBuffer = new TextEncoder().encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
     }
 
-    function checkPin() {
-      const activePin = getAdminPin();
-      if (pinInput.value === activePin) {
+    function getAdminPinHash() {
+      if (state.settings && state.settings.adminPinHash) return state.settings.adminPinHash;
+      if (typeof STORE_SETTINGS !== "undefined" && STORE_SETTINGS.adminPinHash) return STORE_SETTINGS.adminPinHash;
+      // Fallback default hash untuk 'sahla@'
+      return "4e8d8cfd34b1ab90b4eb0ab5a9fb5974d9c4dbcc22a1a699bb0e93e3f73a763d";
+    }
+
+    async function checkPin() {
+      const inputVal = pinInput.value.trim();
+      const inputHash = await sha256(inputVal);
+      const targetHash = getAdminPinHash();
+
+      // Legacy check fallback jika masih plain text
+      const legacyPin = state.settings.adminPin || (typeof STORE_SETTINGS !== "undefined" ? STORE_SETTINGS.adminPin : null);
+
+      if (inputHash === targetHash || (legacyPin && inputVal === legacyPin)) {
         sessionStorage.setItem(PIN_KEY, "valid");
         pinLock.style.display = "none";
       } else {
@@ -847,7 +861,11 @@
     function loadSettingsToForm() {
       const s = state.settings;
       setStoreName.value = s.storeName || "Sahla Store";
-      setWaNumber.value = s.waNumber || "6281234567890";
+      let plainWa = s.waNumber || "";
+      if (!plainWa && s.waNumberEnc) {
+        try { plainWa = atob(s.waNumberEnc); } catch(e) {}
+      }
+      setWaNumber.value = plainWa || "6281234567890";
       setHeroEyebrow.value = s.heroEyebrow || "";
       setHeroTitle.value = s.heroTitle ? s.heroTitle.replace(/<br>/g, " ").replace(/<em>|<\/em>/g, "") : "";
       setHeroLead.value = s.heroLead || "";
@@ -893,7 +911,7 @@
       card3Preview.src = cards[2].img || "img/h3.jpg";
       setCard3Caption.value = cards[2].caption || "";
 
-      setAdminPin.value = s.adminPin || "1234";
+      setAdminPin.value = "";
 
       setCarouselEnabled.checked = s.carouselEnabled !== false;
       if (carouselSettingsBox) {
@@ -915,9 +933,11 @@
       });
     };
 
-    btnSimpanToko.onclick = () => {
+    btnSimpanToko.onclick = async () => {
       state.settings.storeName = setStoreName.value.trim();
-      state.settings.waNumber = setWaNumber.value.trim();
+      const rawWa = setWaNumber.value.trim();
+      state.settings.waNumberEnc = btoa(rawWa);
+      delete state.settings.waNumber; // Pastikan nomor mentah tidak masuk ke JSON publik
       state.settings.heroEyebrow = setHeroEyebrow.value.trim();
       state.settings.heroTitle = setHeroTitle.value.trim();
       state.settings.heroLead = setHeroLead.value.trim();
@@ -949,7 +969,8 @@
 
       const newPin = setAdminPin.value.trim();
       if (newPin && newPin.length >= 4) {
-        state.settings.adminPin = newPin;
+        state.settings.adminPinHash = await sha256(newPin);
+        delete state.settings.adminPin; // Hapus plain text pin
       }
 
       saveState();
@@ -958,7 +979,7 @@
 
     // GENERATE KODE JAVASCRIPT products.js
     function generateJsCode() {
-      return `// KONFIGURASI TOKO & BANNER\nconst STORE_SETTINGS = ${JSON.stringify(state.settings, null, 2)};\n\nconst WA_NUMBER = STORE_SETTINGS.waNumber;\n\n// DAFTAR PRODUK KATALOG\nconst PRODUCTS = ${JSON.stringify(state.products, null, 2)};\n`;
+      return `// KONFIGURASI TOKO & BANNER\nconst STORE_SETTINGS = ${JSON.stringify(state.settings, null, 2)};\n\nfunction getStoreWaNumber() {\n  if (typeof STORE_SETTINGS === "undefined") return "6281234567892";\n  if (STORE_SETTINGS.waNumberEnc) {\n    try {\n      return atob(STORE_SETTINGS.waNumberEnc);\n    } catch (e) {\n      return STORE_SETTINGS.waNumber || "6281234567892";\n    }\n  }\n  return STORE_SETTINGS.waNumber || "6281234567892";\n}\n\nconst WA_NUMBER = getStoreWaNumber();\n\n// DAFTAR PRODUK KATALOG\nconst PRODUCTS = ${JSON.stringify(state.products, null, 2)};\n`;
     }
 
     // PUBLISH KE GITHUB API

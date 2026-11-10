@@ -4,12 +4,12 @@ Selamat! Web katalog produk sudah siap. Web ini didesain agar mudah dikelola lan
 
 ## 1. Alamat Web & Admin
 - **Web Pelanggan:** `https://sahla-store.vercel.app` (Link yang disebar ke status WA)
-- **Halaman Admin:** `https://sahla-store.vercel.app/admin.html` (Tempat edit produk/banner)
+- **Halaman Admin:** `https://sahla-store.vercel.app/sahla-panel.html` (Tempat edit produk/banner)
 
 ---
 
 ## 2. Cara Kelola Katalog dari HP
-Buka halaman `/admin.html` di browser HP, masukkan PIN: **1234**.
+Buka halaman `/sahla-panel.html` di browser HP, masukkan PIN: **sahla@**.
 
 ### A. Menambah / Edit Produk
 1. Klik tombol **"➕ Tambah Produk Baru"** atau klik **"✏️ Edit"** pada barang yang sudah ada.

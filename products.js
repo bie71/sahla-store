@@ -1,7 +1,7 @@
 // KONFIGURASI TOKO & BANNER
 const STORE_SETTINGS = {
   "storeName": "Sahla Store",
-  "waNumber": "6281234567892",
+  "waNumberEnc": "NjI4MTIzNDU2Nzg5Mg==",
   "heroEyebrow": "Ready stock • Update tiap hari",
   "heroTitle": "Cantik, nyaman, harga bersahabat.",
   "heroLead": "Gamis, daster, baju anak sampai HP & laptop — semua yang lagi ready ada di sini. Tinggal pilih, klik, chat.",
@@ -18,7 +18,7 @@ const STORE_SETTINGS = {
       "btnText": "Ambil Promo"
     }
   ],
-  "adminPin": "sahla@",
+  "adminPinHash": "4e8d8cfd34b1ab90b4eb0ab5a9fb5974d9c4dbcc22a1a699bb0e93e3f73a763d",
   "heroTag": "New Arrival",
   "heroCards": [
     {
@@ -48,7 +48,19 @@ const STORE_SETTINGS = {
   ]
 };
 
-const WA_NUMBER = STORE_SETTINGS.waNumber;
+function getStoreWaNumber() {
+  if (typeof STORE_SETTINGS === "undefined") return "6281234567892";
+  if (STORE_SETTINGS.waNumberEnc) {
+    try {
+      return atob(STORE_SETTINGS.waNumberEnc);
+    } catch (e) {
+      return STORE_SETTINGS.waNumber || "6281234567892";
+    }
+  }
+  return STORE_SETTINGS.waNumber || "6281234567892";
+}
+
+const WA_NUMBER = getStoreWaNumber();
 
 // DAFTAR PRODUK KATALOG
 const PRODUCTS = [

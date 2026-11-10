@@ -14,6 +14,10 @@
     }
   }
 
+  if (!settings.waNumber && settings.waNumberEnc) {
+    try { settings.waNumber = atob(settings.waNumberEnc); } catch(e) {}
+  }
+
   const WA_NUMBER = settings.waNumber || "6281234567890";
 
   // Terapkan Pengaturan Toko ke DOM
