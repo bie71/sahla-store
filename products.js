@@ -52,7 +52,8 @@ const STORE_SETTINGS = {
       "btnText": "Ambil Promo",
       "bg": "https://sahla-store.vercel.app/img/banner.jpg"
     }
-  ]
+  ],
+  "logoImg": "img/logo_1795102111889.jpg"
 };
 
 function getStoreWaNumber() {
