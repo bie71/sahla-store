@@ -23,7 +23,10 @@
   // Terapkan Pengaturan Toko ke DOM
   if (settings.storeName) {
     document.querySelectorAll(".brand").forEach(b => {
-      b.innerHTML = `<span class="brand-mark">${settings.storeName.charAt(0)}</span>${settings.storeName}`;
+      const logoHtml = settings.logoImg
+        ? `<img src="${settings.logoImg}" alt="${settings.storeName}" class="brand-logo" style="height: 30px; width: auto; max-width: 80px; margin-right: 8px; border-radius: 6px; object-fit: contain; vertical-align: middle;">`
+        : `<span class="brand-mark">${settings.storeName.charAt(0)}</span>`;
+      b.innerHTML = `${logoHtml}${settings.storeName}`;
     });
     document.title = `${settings.storeName} — Katalog Gamis, Daster & Elektronik`;
   }

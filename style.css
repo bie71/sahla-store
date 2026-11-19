@@ -219,8 +219,9 @@ em { font-style: italic; color: var(--terra); }
   .grid { grid-template-columns: repeat(2, 1fr); gap: .8rem; }
   .card-body { padding: .75rem .8rem .9rem; }
   .card h3 { font-size: .88rem; }
+  .price { flex-wrap: wrap; gap: .2rem .4rem; }
   .price b { font-size: 1rem; }
-  .price s { display: none; }
+  .price s { display: inline; font-size: .75rem; color: var(--muted); }
   .card .btn { font-size: .8rem; padding: .55rem; min-height: 40px; }
   .section-head { align-items: stretch; }
   .search { width: 100%; }
