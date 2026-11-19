@@ -74,17 +74,11 @@ const PRODUCTS = [
   {
     "id": 1,
     "name": "Gamis Syari Ceruty Babydoll Premium",
-    "cat": "Gamis",
+    "cat": "Voucher",
     "price": 285000,
     "old": 350000,
     "img": "img/prod_1.jpg",
-    "badge": "Best Seller",
-    "sizes": [
-      "S",
-      "M",
-      "L",
-      "XL"
-    ],
+    "badge": "Promo",
     "desc": "Bahan Ceruty Babydoll lapis furing, adem dan jatuh. Busui friendly (resleting depan)."
   },
   {
