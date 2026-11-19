@@ -1,16 +1,20 @@
 (() => {
-  // Cek apakah ada data preview lokal dari Admin
+  // Ambil data live dari products.js
   let settings = typeof STORE_SETTINGS !== "undefined" ? STORE_SETTINGS : {};
   let products = typeof PRODUCTS !== "undefined" ? PRODUCTS : [];
 
-  const localSaved = localStorage.getItem("sahla_catalog_data");
-  if (localSaved) {
-    try {
-      const parsed = JSON.parse(localSaved);
-      if (parsed.settings) settings = parsed.settings;
-      if (parsed.products && parsed.products.length) products = parsed.products;
-    } catch (e) {
-      console.warn("Gagal membaca preview lokal:", e);
+  // Hanya gunakan preview localStorage jika parameter ?preview=1 ada di URL (mode preview admin)
+  const isPreviewMode = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("preview");
+  if (isPreviewMode) {
+    const localSaved = localStorage.getItem("sahla_catalog_data");
+    if (localSaved) {
+      try {
+        const parsed = JSON.parse(localSaved);
+        if (parsed.settings) settings = parsed.settings;
+        if (parsed.products && parsed.products.length) products = parsed.products;
+      } catch (e) {
+        console.warn("Gagal membaca preview lokal:", e);
+      }
     }
   }
 

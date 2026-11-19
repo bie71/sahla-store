@@ -1,0 +1,22 @@
+{
+  "headers": [
+    {
+      "source": "/(products.js|app.js|index.html)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=60, stale-while-revalidate=120"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=60, stale-while-revalidate=120"
+        }
+      ]
+    }
+  ]
+}
